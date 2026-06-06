@@ -1,8 +1,8 @@
 package Logica;
 
 /**
- * la clase {@link Expendedor} es la que conecta todo para el comprador,
- * es por eso que tiene un codigo mas largo
+ * Clase {@link Expendedor} es la encargada de crear los depósitos de cada producto
+ * como también guardar las diferentes monedas de vuelto y el producto comprado
  */
 
 public class Expendedor {
@@ -10,7 +10,7 @@ public class Expendedor {
     private int precioProductos;
 
     /**
-     * se crean los depositos de todos los productos definidos, la cantidad de cada
+     * Se crean los depósitos de todos los productos definidos, la cantidad de cada
      * producto se define al crear el expendedor
      */
     private Deposito<CocaCola> cocacola = new Deposito<>();
@@ -20,16 +20,19 @@ public class Expendedor {
     private Deposito<Snickers> snickers = new Deposito<>();
 
     /**
-     * el deposito monVu sirve exclusivamente para entregar el vuelto en monedas de 100,
+     * El depósito monVu sirve exclusivamente para entregar el vuelto en monedas de 100,
      * o devolverle el dinero al comprador si ocurre una exception
      */
     private Deposito<Moneda> monVu = new Deposito<>();
 
     /**
-     * todos estos static int sirven para facilitar la comprension conceptual, como
+     * Todos estos static int sirven para facilitar la comprensión conceptual, como
      * {@link #comprarProducto(Moneda, int)} solo puede recibir moneda y entero definimos
-     * que cada numero representa un producto
+     * que cada número representa un producto
      */
+
+    // agregar manera de utilizar enum en vez de constantes
+
     public static final int  COCA=1;
     public static final int  SPRITE=2;
     public static final int  FANTA=3;
@@ -40,8 +43,8 @@ public class Expendedor {
         this.numProductos = numProductos;
 
         /**
-         * @param cont sirve para dar un N° de serie unico para cada producto en el for,
-         * el cual crea productos segun la cantidad definida al inicializar el expendedor
+         * @param cont sirve para dar un N° de serie único para cada producto en el for,
+         * el cual crea productos según la cantidad definida al inicializar el expendedor
          */
         int cont = 1;
         for(int i = 0; i < this.numProductos; i++){
@@ -52,10 +55,32 @@ public class Expendedor {
             snickers.add(new Snickers(cont+4));
             cont+=5;
         }
-
     }
-    public Producto comprarProducto(Moneda m, int cual) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException{
-        while(monVu.get() != null);
+
+    /**
+     * productoComprado guarda el producto comprado en {@link #comprarProducto(Moneda, int)}
+     * después se retornará en el método {@link #getProducto()}
+     */
+    private Producto productoComprado;
+
+    public void comprarProducto(Moneda m, int cual) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException{
+        while (monVu.get() != null);
+
+        if (m == null) {
+            /**
+             * @throws PagoIncorrectoException se lanza si se intenta pagar con una moneda null
+             */
+            throw new PagoIncorrectoException();
+        }
+
+        if (m.getValor() < precioProductos) {
+            /**
+             * @throws PagoInsuficienteException se lanza si el dinero no alcanza para comprar el producto solicitado
+             */
+            monVu.add(m);
+            throw new PagoInsuficienteException();
+        }
+
         /**
          * aqui una aclaracion importante y es porque se hace uso de dos switch, porque en principio
          * es innecesario, pero es porque en un switch se define el precio del producto y en el otro
@@ -81,25 +106,14 @@ public class Expendedor {
                 this.precioProductos = Precio.SNICKERS.getValor();
                 break;
             default:
-                monVu.add(m);  // deposito no existe
-                return null;
+                monVu.add(m);
         }
 
-        if(m == null){
-            /**
-             * @throws PagoIncorrectoException se lanza si se intenta pagar con una moneda null
-             */
-            throw new PagoIncorrectoException();
-        }
-        if(m.getValor() < precioProductos){
-            /**
-             * @throws PagoInsuficienteException se lanza si el dinero no alcanza para comprar el producto solicitado
-             */
-            monVu.add(m);
-            throw new PagoInsuficienteException();
-        }
-
+        /**
+         * Se inicializa un producto local, en el cual posteriormente se guardará el producto comprado
+         */
         Producto p = null;
+
         switch(cual) {
             case COCA:
                 p = cocacola.get();
@@ -118,13 +132,19 @@ public class Expendedor {
                 break;
         }
 
-        if(p == null){
+        if (p == null) {
             /**
-             * @throws NoHayProductoException se lanza si no queda producto (el deposito p entrego null)
+             * @throws NoHayProductoException se lanza si no queda producto
              */
             monVu.add(m);
             throw new NoHayProductoException();
         }
+
+        /**
+         * Se guarda el producto seleccionado por el segundo switch
+         */
+        productoComprado = p;
+
         /**
          * @param diff es el vuelto, el cual no se retorna (porque lo unico que se retorna es el producto p)
          * si no que se almacena en un deposito el cual se rellena con monedas de 100 hasta completar el vuelto
@@ -133,15 +153,25 @@ public class Expendedor {
         for(int i = 0; i < diff; i+=100){
             monVu.add(new Moneda100());
         }
-        return p;
     }
 
     /**
      *
      * @return se retorna las monedas de 100 de una en una, el comprador debe tener
-     * un metodo para obtener su vuelto completo
+     * un método para obtener su vuelto completo
      */
+
+    // agregar manera de tener mónedas de vuelto diferente de 100
+
     public Moneda getVuelto() {
         return monVu.get();
+    }
+
+    /**
+     *
+     * @return se retorna el producto inicializado en {@link #comprarProducto(Moneda, int)}
+     */
+    public Producto getProducto() {
+        return productoComprado;
     }
 }
