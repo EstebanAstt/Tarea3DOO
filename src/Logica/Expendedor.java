@@ -4,15 +4,11 @@ package Logica;
  * Clase {@link Expendedor} es la encargada de crear los depósitos de cada producto
  * como también guardar las diferentes monedas de vuelto y el producto comprado
  */
-
 public class Expendedor {
     private int numProductos;
     private int precioProductos;
 
-    /**
-     * Se crean los depósitos de todos los productos definidos, la cantidad de cada
-     * producto se define al crear el expendedor
-     */
+    /** Se crean los depósitos de todos los productos definidos */
     private Deposito<CocaCola> cocacola = new Deposito<>();
     private Deposito<Sprite> sprite = new Deposito<>();
     private Deposito<Fanta> fanta = new Deposito<>();
@@ -21,16 +17,14 @@ public class Expendedor {
 
     /**
      * El depósito monVu sirve exclusivamente para entregar el vuelto en monedas de 100,
-     * o devolverle el dinero al comprador si ocurre una exception
+     * o devolverle el dinero al comprador si ocurre una excepción
      */
     private Deposito<Moneda> monVu = new Deposito<>();
 
     /**
-     * Todos estos static int sirven para facilitar la comprensión conceptual, como
-     * {@link #comprarProducto(Moneda, TipoProducto)} solo puede recibir moneda y entero definimos
-     * que cada número representa un producto
+     * Constructor que se encarga de crear los productos en sus respectivos depósitos
+     * @param numProductos que determina el número total de productos
      */
-
     public Expendedor(int numProductos){
         this.numProductos = numProductos;
 
@@ -55,6 +49,12 @@ public class Expendedor {
      */
     private Producto productoComprado;
 
+    /**
+     * Se compra un producto y se saca de su respectivo depósito
+     * también se guardan las monedas de vuelto en el depósito de monedas
+     * @param m Moneda ingresada
+     * @param cual TipoProducto ingresado
+     */
     public void comprarProducto(Moneda m, TipoProducto cual) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException{
         while (monVu.get() != null);
 
@@ -74,14 +74,14 @@ public class Expendedor {
         }
 
         /**
-         * Aquí una aclaración importante y es porque se hace uso de dos switch, porque en principio
-         * es innecesario, pero es porque en un switch se define el precio del producto y en el otro
+         * Aquí una aclaración importante y es porque se hace uso de dos switch
+         * en principio es innecesario, porque en un switch se define el precio del producto y en el otro
          * se crea el producto, no se hacen ambas cosas juntas porque se tendría que extraer el producto
          * de su depósito para poder verificar si al comprador le alcanza, y en caso de que no le alcanze,
          * como el producto ya se sacó del depósito desaparecería, lo cual no tiene sentido, se podría
          * vaciar un depósito sin haber comprado un solo producto
          */
-        
+
         switch (cual) {
             case COCA:
                 this.precioProductos = TipoProducto.COCA.getValor();
@@ -102,9 +102,8 @@ public class Expendedor {
                 monVu.add(m);
         }
 
-        /** Se inicializa un producto local, en el cual posteriormente se guardará el producto comprado */
+        /** Se inicializa un producto local nulo */
         Producto p = null;
-
         switch (cual) {
             case COCA:
                 p = cocacola.get();
@@ -145,17 +144,15 @@ public class Expendedor {
     }
 
     /**
-     *
-     * @return se retorna las monedas de 100 de una en una, el comprador debe tener
-     * un método para obtener su vuelto completo
+     * Se encarga de recibir una moneda del depósito de monedas
+     * @return se retorna las monedas de 100 de una en una
      */
-
     public Moneda getVuelto() {
         return monVu.get();
     }
 
     /**
-     *
+     * Método encargado de retornar el producto comprado
      * @return se retorna el producto inicializado en {@link #comprarProducto(Moneda, TipoProducto)}
      */
     public Producto getProducto() {
