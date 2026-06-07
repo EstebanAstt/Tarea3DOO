@@ -27,17 +27,9 @@ public class Expendedor {
 
     /**
      * Todos estos static int sirven para facilitar la comprensión conceptual, como
-     * {@link #comprarProducto(Moneda, int)} solo puede recibir moneda y entero definimos
+     * {@link #comprarProducto(Moneda, TipoProducto)} solo puede recibir moneda y entero definimos
      * que cada número representa un producto
      */
-
-    // agregar manera de utilizar enum en vez de constantes
-
-    public static final int  COCA=1;
-    public static final int  SPRITE=2;
-    public static final int  FANTA=3;
-    public static final int  SUPER8=4;
-    public static final int  SNICKERS=5;
 
     public Expendedor(int numProductos){
         this.numProductos = numProductos;
@@ -58,12 +50,12 @@ public class Expendedor {
     }
 
     /**
-     * productoComprado guarda el producto comprado en {@link #comprarProducto(Moneda, int)}
+     * productoComprado guarda el producto comprado en {@link #comprarProducto(Moneda, TipoProducto)}
      * después se retornará en el método {@link #getProducto()}
      */
     private Producto productoComprado;
 
-    public void comprarProducto(Moneda m, int cual) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException{
+    public void comprarProducto(Moneda m, TipoProducto cual) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException{
         while (monVu.get() != null);
 
         if (m == null) {
@@ -82,39 +74,38 @@ public class Expendedor {
         }
 
         /**
-         * aqui una aclaracion importante y es porque se hace uso de dos switch, porque en principio
+         * Aquí una aclaración importante y es porque se hace uso de dos switch, porque en principio
          * es innecesario, pero es porque en un switch se define el precio del producto y en el otro
-         * se crea el producto, no se hacen ambas cosas juntas porque se tendria que extraer el producto
-         * de su deposito para poder verificar si al comprador le alcanza, y en caso de que no le alcanze,
-         * como el producto ya se saco del deposito desapareceria, lo cual no tiene sentido, se podria
-         * vaciar un deposito sin haber comprado un solo producto
+         * se crea el producto, no se hacen ambas cosas juntas porque se tendría que extraer el producto
+         * de su depósito para poder verificar si al comprador le alcanza, y en caso de que no le alcanze,
+         * como el producto ya se sacó del depósito desaparecería, lo cual no tiene sentido, se podría
+         * vaciar un depósito sin haber comprado un solo producto
          */
-        switch(cual) {
+        
+        switch (cual) {
             case COCA:
-                this.precioProductos = Precio.COCA.getValor();
+                this.precioProductos = TipoProducto.COCA.getValor();
                 break;
             case SPRITE:
-                this.precioProductos = Precio.SPRITE.getValor();
+                this.precioProductos = TipoProducto.SPRITE.getValor();
                 break;
             case FANTA:
-                this.precioProductos = Precio.FANTA.getValor();
+                this.precioProductos = TipoProducto.FANTA.getValor();
                 break;
             case SUPER8:
-                this.precioProductos = Precio.SUPER8.getValor();
+                this.precioProductos = TipoProducto.SUPER8.getValor();
                 break;
             case SNICKERS:
-                this.precioProductos = Precio.SNICKERS.getValor();
+                this.precioProductos = TipoProducto.SNICKERS.getValor();
                 break;
             default:
                 monVu.add(m);
         }
 
-        /**
-         * Se inicializa un producto local, en el cual posteriormente se guardará el producto comprado
-         */
+        /** Se inicializa un producto local, en el cual posteriormente se guardará el producto comprado */
         Producto p = null;
 
-        switch(cual) {
+        switch (cual) {
             case COCA:
                 p = cocacola.get();
                 break;
@@ -140,13 +131,11 @@ public class Expendedor {
             throw new NoHayProductoException();
         }
 
-        /**
-         * Se guarda el producto seleccionado por el segundo switch
-         */
+        /** Se guarda el producto seleccionado por el segundo switch */
         productoComprado = p;
 
         /**
-         * @param diff es el vuelto, el cual no se retorna (porque lo unico que se retorna es el producto p)
+         * @param diff es el vuelto, el cual no se retorna (porque lo único que se retorna es el producto p)
          * si no que se almacena en un deposito el cual se rellena con monedas de 100 hasta completar el vuelto
          */
         int diff = m.getValor() - precioProductos; //con esto se crea el vuelto y se almacena en monedas de 100
@@ -161,15 +150,13 @@ public class Expendedor {
      * un método para obtener su vuelto completo
      */
 
-    // agregar manera de tener mónedas de vuelto diferente de 100
-
     public Moneda getVuelto() {
         return monVu.get();
     }
 
     /**
      *
-     * @return se retorna el producto inicializado en {@link #comprarProducto(Moneda, int)}
+     * @return se retorna el producto inicializado en {@link #comprarProducto(Moneda, TipoProducto)}
      */
     public Producto getProducto() {
         return productoComprado;
