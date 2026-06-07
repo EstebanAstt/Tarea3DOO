@@ -19,7 +19,7 @@ import java.io.File;
  * se ubica cada producto)
  * -> Detalles como el audio al presionar un boton
  * -> como vamos a hacer para que el expendedor reciba monedas, podria ser que se pinte un rectangulo blanco arriba de
- * los botones (esta el espcacio) que indique el numero del producto y el dinero ingresado, y ya cuando se presione el
+ * los botones (esta el espacio) que indique el numero del producto y el dinero ingresado, y ya cuando se presione el
  * boton aceptar se aplique la logica de comprar producto
  * -> que el apartado de insertar moneda sea interactivo
  *
@@ -27,6 +27,7 @@ import java.io.File;
 public class PanelExpendedor extends JFrame {
 
     public static final int TAMANO_BOTON = 20;
+    public static final int TAMANO_MONEDA = 30;
     public static final int INICIO_BOTONES_NUMERICOS_X = 328;
     public static final int INICIO_BOTONES_NUMERICOS_Y = 80;
     public PanelExpendedor() {
@@ -84,7 +85,7 @@ public class PanelExpendedor extends JFrame {
                 // Dibuja la imagen ocupando todo el panel
                 g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
             } else {
-                // Sin imagen: fondo gris de respaldo
+                //fondo gris de respaldo
                 g.setColor(new Color(0x8A8A8A));
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
@@ -209,6 +210,74 @@ public class PanelExpendedor extends JFrame {
                 g.drawImage(iconPresionado.getImage(), 0, 0, getWidth(), getHeight(), this);
             }
 
+        }
+    }
+
+    class CoinButton extends JButton {
+
+        private Image sprite;
+        private float opacidad = 1.0f;
+        private boolean usada = false;
+        private final Runnable onRecoger;
+
+        CoinButton(String rutaSprite, int size, Runnable onRecoger) {
+            this.onRecoger = onRecoger;
+
+
+            try {
+                BufferedImage img = ImageIO.read(new File(rutaSprite));
+                sprite = img.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+            } catch (Exception e) {
+                System.err.println("No se encontró el sprite: " + rutaSprite);
+            }
+
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+            setFocusPainted(false);
+            setOpaque(false);
+            setText("");
+            setVisible(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            addActionListener(e -> recoger());
+        }
+
+        private void recoger() {
+            if (usada) return;
+
+            usada = true;
+            onRecoger.run();
+            animarDesvanecimiento();
+        }
+
+        //Una animacion para bajar la opacidad y se vea mas limpio
+        private void animarDesvanecimiento() {
+            Timer fade = new Timer(30, null);
+            fade.addActionListener(e -> {
+                opacidad -= 0.12f;
+                if (opacidad <= 0) {
+                    opacidad = 0;
+                    fade.stop();
+                    Container padre = getParent();
+                    if (padre != null) {
+                        padre.remove(this);
+                        padre.repaint();
+                    }
+                } else {
+                    repaint();
+                }
+            });
+            fade.start();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            if (opacidad <= 0 || sprite == null) return;
+            Graphics2D g2 = (Graphics2D) g.create();
+            // Aplica opacidad para el fade al desaparecer
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidad));
+            g2.drawImage(sprite, 0, 0, getWidth(), getHeight(), this);
+            g2.dispose();
         }
     }
 }
