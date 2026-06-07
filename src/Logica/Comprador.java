@@ -14,24 +14,14 @@ public class Comprador {
         this.vuelto = 0;
         this.monedero = new ArrayList<>();
 
-        Deposito<Moneda> monedasDe100  = new Deposito<>();
-        Deposito<Moneda> monedasDe500  = new Deposito<>();
-        Deposito<Moneda> monedasDe1000 = new Deposito<>();
-        Deposito<Moneda> monedasDe1500 = new Deposito<>();
+        for (TipoMoneda t : TipoMoneda.values()) {
+            Deposito<Moneda> nuevoDeposito = new Deposito<>();
+            for(int i = 0; i <= 5; i++){
+                nuevoDeposito.add(t.crearMoneda());
 
-        for(int i = 0; i <= 5; i++){
-            monedasDe100.add(new Moneda100());
-            monedasDe500.add(new Moneda500());
-            monedasDe1000.add(new Moneda1000());
-            monedasDe1500.add(new Moneda1500());
-
+            }
+            this.monedero.add(nuevoDeposito);
         }
-
-        monedero.add(monedasDe100);
-        monedero.add(monedasDe500);
-        monedero.add(monedasDe1000);
-        monedero.add(monedasDe1500);
-
 
         Producto producto = exp.getProducto();
         
@@ -68,25 +58,11 @@ public class Comprador {
     }
 
     public void agregarMoneda(TipoMoneda tipo_moneda){
-        int indice = tipo_moneda.getTipo();
-        switch (tipo_moneda){
-            case MONEDA100:
-                monedero.get(indice).add(new Moneda100());
-                break;
-            case MONEDA500:
-                monedero.get(indice).add(new Moneda500());
-                break;
-            case MONEDA1000:
-                monedero.get(indice).add(new Moneda1000());
-                break;
-            case MONEDA1500:
-                monedero.get(indice).add(new Moneda1500());
-                break;
-            default:
-                System.out.println("Moneda Inexistente");
+        if (tipo_moneda == null) {
+            throw new IllegalArgumentException("El tipo de moneda no puede ser nulo.");
         }
 
+        monedero.get(tipo_moneda.getTipo()).add(tipo_moneda.crearMoneda());
+
     }
-
-
 }
