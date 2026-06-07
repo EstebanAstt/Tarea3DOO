@@ -1,10 +1,12 @@
 package Logica;
 import java.util.ArrayList;
 
+//en agregarMoneda creo que hay que hacer una exception si se ingresa una moneda inexistente, no creo que se ocupe pero para que este ahi
+
 public class Comprador {
     private String sonido;
     private int vuelto;
-    private ArrayList<ArrayList<Moneda>> monedero;
+    private ArrayList<Deposito<Moneda>> monedero;
 
     // agregar documentación a ésta clase
 
@@ -12,10 +14,10 @@ public class Comprador {
         this.vuelto = 0;
         this.monedero = new ArrayList<>();
 
-        ArrayList<Moneda> monedasDe100  = new ArrayList<>();
-        ArrayList<Moneda> monedasDe500  = new ArrayList<>();
-        ArrayList<Moneda> monedasDe1000 = new ArrayList<>();
-        ArrayList<Moneda> monedasDe1500 = new ArrayList<>();
+        Deposito<Moneda> monedasDe100  = new Deposito<>();
+        Deposito<Moneda> monedasDe500  = new Deposito<>();
+        Deposito<Moneda> monedasDe1000 = new Deposito<>();
+        Deposito<Moneda> monedasDe1500 = new Deposito<>();
 
         for(int i = 0; i <= 5; i++){
             monedasDe100.add(new Moneda100());
@@ -55,6 +57,35 @@ public class Comprador {
 
     public String queConsumiste() {
         return this.sonido;
+    }
+
+    public Moneda retirarMoneda(TipoMoneda tipo_moneda){
+        int indice = tipo_moneda.getTipo();
+        if (monedero.get(indice).getSize() > 0) {
+            return monedero.get(indice).get();
+        }
+        return null;
+    }
+
+    public void agregarMoneda(TipoMoneda tipo_moneda){
+        int indice = tipo_moneda.getTipo();
+        switch (tipo_moneda){
+            case MONEDA100:
+                monedero.get(indice).add(new Moneda100());
+                break;
+            case MONEDA500:
+                monedero.get(indice).add(new Moneda500());
+                break;
+            case MONEDA1000:
+                monedero.get(indice).add(new Moneda1000());
+                break;
+            case MONEDA1500:
+                monedero.get(indice).add(new Moneda1500());
+                break;
+            default:
+                System.out.println("Moneda Inexistente");
+        }
+
     }
 
 
