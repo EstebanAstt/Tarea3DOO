@@ -35,4 +35,8 @@ public class Deposito<T> {
             return null;
         }
     }
+
+    public int getSize(){
+        return dep.size();
+    }
 }
