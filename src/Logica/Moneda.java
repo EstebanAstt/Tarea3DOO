@@ -6,11 +6,15 @@ package Logica;
  * Además cada subclase de Moneda tiene un valor distinto al retornar getValor
  */
 abstract class Moneda {
+    private static int NUM_SERIE = 1;
+    private int serie;
     public Moneda(){
+        this.serie = NUM_SERIE;
+        NUM_SERIE++;
     }
 
-    public Moneda getSerie(){
-        return this;
+    public int getSerie(){
+        return this.serie;
     }
     public abstract int getValor();
 }
