@@ -12,8 +12,12 @@ public class Moneda100 extends Moneda {
     public int getValor(){
         return 100;
     }
+    @Override
+    public TipoMoneda getTipoMoneda(){
+        return TipoMoneda.MONEDA100;
+    }
 
     public String toString(){
-        return getValor() + " " + getSerie().hashCode();
+        return getValor() + " " + getSerie();
     }
 }

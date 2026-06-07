@@ -16,5 +16,6 @@ abstract class Moneda {
     public int getSerie(){
         return this.serie;
     }
+    public abstract TipoMoneda getTipoMoneda();
     public abstract int getValor();
 }
