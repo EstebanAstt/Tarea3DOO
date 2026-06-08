@@ -24,37 +24,32 @@ import java.io.File;
  * -> que el apartado de insertar moneda sea interactivo
  *
  */
-public class PanelExpendedor extends JFrame {
+public class PanelExpendedor extends JPanel {
 
     public static final int TAMANO_BOTON = 20;
     public static final int TAMANO_MONEDA = 30;
     public static final int INICIO_BOTONES_NUMERICOS_X = 328;
     public static final int INICIO_BOTONES_NUMERICOS_Y = 80;
     public PanelExpendedor() {
-        setTitle("Expendedor");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
 
-        MachinePanel panel = new MachinePanel();
+        PanelMaquina panel = new PanelMaquina();
         add(panel);
-        pack();
-        setLocationRelativeTo(null);
+
     }
 
     /**
      * imagenFondo es el expendedor base
      * buffer es el StringBuilder que apila cada label del teclado numerico para poder escoger el producto
      */
-    static class MachinePanel extends JPanel {
+    static class PanelMaquina extends JPanel {
 
         private BufferedImage imagenFondo;
         private final StringBuilder buffer = new StringBuilder();
 
 
-        public MachinePanel() {
+        public PanelMaquina() {
 
             try {
-
                 imagenFondo  = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Expendedor.png"));
             } catch (Exception e) {
                 System.err.println("No se encontró Expendedor.png: " + e.getMessage());
@@ -156,7 +151,7 @@ public class PanelExpendedor extends JFrame {
          * @param h altura del sprite
          * @return
          */
-        private ImageIcon cargarSprite(String nombre, int w, int h) {
+        public ImageIcon cargarSprite(String nombre, int w, int h) {
             try {
                 BufferedImage img = ImageIO.read(getClass().getClassLoader().getResource(nombre));
                 Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
@@ -212,7 +207,7 @@ public class PanelExpendedor extends JFrame {
 
         }
     }
-
+/*
     class CoinButton extends JButton {
 
         private Image sprite;
@@ -279,5 +274,5 @@ public class PanelExpendedor extends JFrame {
             g2.drawImage(sprite, 0, 0, getWidth(), getHeight(), this);
             g2.dispose();
         }
-    }
+    }*/
 }
