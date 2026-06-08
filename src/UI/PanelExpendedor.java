@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.net.URL;
 
 /**
  *<|-|>Cosas avanzadas por ahora:
@@ -146,18 +147,24 @@ public class PanelExpendedor extends JPanel {
 
         /**
          *
-         * @param nombre el nombre del sprite que esta en resources
+         * @param ruta la ubicacion del sprite que esta en resources
          * @param w ancho del sprite
          * @param h altura del sprite
          * @return
          */
-        public ImageIcon cargarSprite(String nombre, int w, int h) {
+        private ImageIcon cargarSprite(String ruta, int w, int h) {
             try {
-                BufferedImage img = ImageIO.read(getClass().getClassLoader().getResource(nombre));
+                URL url = getClass().getClassLoader().getResource(ruta);
+                if (url == null) {
+                    System.err.println("Sprite no encontrado: " + ruta);
+                    return null;
+                }
+                BufferedImage img = ImageIO.read(url);
                 Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
                 return new ImageIcon(scaled);
             } catch (Exception e) {
-                return null; // no hay sprite: el botón queda completamente invisible
+                System.err.println("Error cargando sprite: " + ruta);
+                return null;
             }
         }
     }
