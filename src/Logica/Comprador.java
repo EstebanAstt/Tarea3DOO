@@ -14,10 +14,8 @@ public class Comprador {
      * Constructor que determina el producto consumido y el dinero de vuelto total
      * además también se inicializa un monedero para guardar distintos tipos de monedas
      * @param exp Expendedor ingresado
-     * @param tipo TipoProducto ingresado
      */
-    public Comprador(Expendedor exp, TipoProducto tipo) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
-        this.vuelto = 0;
+    public Comprador(Expendedor exp) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
         this.monedero = new ArrayList<>();
 
         for (TipoMoneda t : TipoMoneda.values()) {
@@ -41,11 +39,6 @@ public class Comprador {
             this.sonido = null;
         }
 
-        /** Se sacan las monedas y se calcula el valor total de vuelto */
-        Moneda monedaVuelto;
-        while ((monedaVuelto = exp.getVuelto()) != null) {
-            this.vuelto += monedaVuelto.getValor();
-        }
     }
 
     /**
