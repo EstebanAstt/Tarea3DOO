@@ -20,6 +20,8 @@ public class Expendedor {
      * o devolverle el dinero al comprador si ocurre una excepción
      */
     private Deposito<Moneda> monVu = new Deposito<>();
+    private Deposito<Moneda> monTemporal = new Deposito<>();
+    private Deposito<Moneda> monGuardadas = new Deposito<>();
 
     /**
      * Constructor que se encarga de crear los productos en sus respectivos depósitos
@@ -149,6 +151,10 @@ public class Expendedor {
      */
     public Moneda getVuelto() {
         return monVu.get();
+    }
+
+    public void agregarMoneda(Moneda moneda){
+        if(moneda != null){monTemporal.add(moneda);}
     }
 
     /**
