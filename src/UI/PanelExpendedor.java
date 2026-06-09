@@ -1,4 +1,6 @@
 package UI;
+import Logica.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -118,7 +120,16 @@ public class PanelExpendedor extends JPanel {
 
                 BotonInvisible boton = new BotonInvisible(label, iconPresionado);
                 boton.setBounds(x, y, w, h);
-                boton.addActionListener(e -> onTeclaPresionada(label));
+                boton.addActionListener(e -> {
+
+                    // Por onTeclaPresionada, se crea excepción para no dar error
+                    // Opcional, luego borrar o cambiar por otra cosa
+                    try {
+                        onTeclaPresionada(label);
+                    } catch (Exception ex) {
+                        System.out.print("texto de prueba");
+                    }
+                });
                 add(boton);
             }
         }
@@ -127,22 +138,64 @@ public class PanelExpendedor extends JPanel {
          *
          * @param tecla
          */
-        void onTeclaPresionada(String tecla) {
+
+        // Esta moneda se borra después, se debe ocupar una moneda sacada
+        // del monedero del comprador para realizar una compra
+        // hasta ahora se ocupa una moneda auxiliar
+        private Moneda1500 monedaAuxiliar = new Moneda1500();
+
+        void onTeclaPresionada(String tecla) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
             switch (tecla) {
                 case "Aceptar":
                     System.out.println("Código: " + buffer);
-                    //Aca hay que poner la logica, es decir, llamar a los productos y que salga del expendedor
-                    JOptionPane.showMessageDialog(this, "Seleccionaste: " + buffer);
+                    Expendedor expendedorPanel = new Expendedor(9);
+                    Comprador compradorLocal = new Comprador(expendedorPanel);
+
+                    // aquí se podría sacar la moneda a partir del panel comprador o compradorLocal
+                    // es más seguro ir por seleccionarMoneda en PanelComprador
+
+                    /** A partir del buffer cuando se presiona uno de los botones, se saca el producto
+                     * pedido desde su respectivo depósito */
+                    try {
+                        switch (buffer.toString()){
+                            case "1":
+                            case "4":
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.COCA); break;
+                            case "2":
+                            case "5":
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.FANTA); break;
+                            case "3":
+                            case "6":
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SPRITE); break;
+                            case "7":
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SNICKERS); break;
+                            case "8":
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SUPER8); break;
+                            case "9":
+                                // Producto nulo opcional, puede servir para consumir y dar una excepción
+                                Producto ProductoNulo = null; break;
+                            default: break;
+                        }
+                        JOptionPane.showMessageDialog(this, "Seleccionaste: " + buffer);
+                    } catch (PagoIncorrectoException e) {
+                        JOptionPane.showMessageDialog(this, "Se ingresó una moneda inválida");
+                    } catch (PagoInsuficienteException e) {
+                        JOptionPane.showMessageDialog(this, "El valor ingresado es inferior al producto pedido");
+                    } catch (NoHayProductoException e) {
+                        JOptionPane.showMessageDialog(this, "No hay más productos de este tipo");
+                    }
                     buffer.setLength(0);
                     break;
                 case "Borrar":
                     if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
                     break;
                 default:
-                    if (buffer.length() < 3) buffer.append(tecla);
+                    if (buffer.length() < 1) buffer.append(tecla);
             }
             System.out.println("Buffer actual: " + buffer);
-            repaint(); // cuando haya display (pantallita donde se indique el producto) actualiza el estado del buffer
+
+            /** Cuando existe display, se actualiza el estado del buffer */
+            repaint();
         }
 
         /**

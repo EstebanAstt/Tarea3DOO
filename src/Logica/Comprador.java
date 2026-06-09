@@ -15,7 +15,7 @@ public class Comprador {
      * además también se inicializa un monedero para guardar distintos tipos de monedas
      * @param exp Expendedor ingresado
      */
-    public Comprador(Expendedor exp) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
+    public Comprador(Expendedor exp) {
         this.monedero = new ArrayList<>();
 
         for (TipoMoneda t : TipoMoneda.values()) {
@@ -42,7 +42,7 @@ public class Comprador {
     }
 
     /**
-     * Método que retorna el vuelto calculado en {@link #Comprador(Expendedor, TipoProducto)}
+     * Método que retorna el vuelto calculado en {@link #Comprador(Expendedor)}
      * @return el vuelto total
      */
     public int cuantoVuelto() {
@@ -50,7 +50,7 @@ public class Comprador {
     }
 
     /**
-     * Método que retorna el producto consumido en {@link #Comprador(Expendedor, TipoProducto)}
+     * Método que retorna el producto consumido en {@link #Comprador(Expendedor)}
      * @return producto consumido como variable String
      */
     public String queConsumiste() {
