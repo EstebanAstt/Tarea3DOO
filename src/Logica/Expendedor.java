@@ -10,8 +10,11 @@ public class Expendedor {
 
     /** Se crean los depósitos de todos los productos definidos */
     private Deposito<CocaCola> cocacola = new Deposito<>();
+    private Deposito<CocaCola> cocacola1 = new Deposito<>();
     private Deposito<Sprite> sprite = new Deposito<>();
+    private Deposito<Sprite> sprite1 = new Deposito<>();
     private Deposito<Fanta> fanta = new Deposito<>();
+    private Deposito<Fanta> fanta1 = new Deposito<>();
     private Deposito<Super8> super8 = new Deposito<>();
     private Deposito<Snickers> snickers = new Deposito<>();
 
@@ -37,16 +40,19 @@ public class Expendedor {
         int cont = 1;
         for(int i = 0; i < this.numProductos; i++){
             cocacola.add(new CocaCola(cont));
-            sprite.add(new Sprite(cont+1));
-            fanta.add(new Fanta(cont+2));
-            super8.add(new Super8(cont+3));
-            snickers.add(new Snickers(cont+4));
-            cont+=5;
+            cocacola1.add(new CocaCola(cont+1));
+            sprite.add(new Sprite(cont+2));
+            sprite1.add(new Sprite(cont+3));
+            fanta.add(new Fanta(cont+4));
+            fanta1.add(new Fanta(cont+5));
+            super8.add(new Super8(cont+6));
+            snickers.add(new Snickers(cont+7));
+            cont+=8;
         }
     }
 
     /**
-     * productoComprado guarda el producto comprado en {@link #comprarProducto(Moneda, TipoProducto)}
+     * productoComprado guarda el producto comprado en {@link #comprarProducto(TipoProducto)}
      * después se retornará en el método {@link #getProducto()}
      */
     private Producto productoComprado;
@@ -54,13 +60,12 @@ public class Expendedor {
     /**
      * Se compra un producto y se saca de su respectivo depósito
      * también se guardan las monedas de vuelto en el depósito de monedas
-     * @param m Moneda ingresada
      * @param cual TipoProducto ingresado
      */
-    public void comprarProducto(Moneda m, TipoProducto cual) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException{
+    public void comprarProducto(TipoProducto cual) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException{
         while (monVu.get() != null);
 
-        if (m == null) {
+        if (getCantidadIngresada() == 0) {
             /**
              * @throws PagoIncorrectoException se lanza si se intenta pagar con una moneda null
              */
@@ -79,11 +84,20 @@ public class Expendedor {
             case COCA:
                 this.precioProductos = TipoProducto.COCA.getValor();
                 break;
+            case COCA1:
+                this.precioProductos = TipoProducto.COCA1.getValor();
+                break;
             case SPRITE:
                 this.precioProductos = TipoProducto.SPRITE.getValor();
                 break;
+            case SPRITE1:
+                this.precioProductos = TipoProducto.SPRITE1.getValor();
+                break;
             case FANTA:
                 this.precioProductos = TipoProducto.FANTA.getValor();
+                break;
+            case FANTA1:
+                this.precioProductos = TipoProducto.FANTA1.getValor();
                 break;
             case SUPER8:
                 this.precioProductos = TipoProducto.SUPER8.getValor();
@@ -92,7 +106,7 @@ public class Expendedor {
                 this.precioProductos = TipoProducto.SNICKERS.getValor();
                 break;
             default:
-                monVu.add(m);
+                vaciarMonTemporal(false);
         }
 
         if (getCantidadIngresada() < precioProductos) {
@@ -109,11 +123,20 @@ public class Expendedor {
             case COCA:
                 p = cocacola.get();
                 break;
+            case COCA1:
+                p = cocacola1.get();
+                break;
             case SPRITE:
                 p = sprite.get();
                 break;
+            case SPRITE1:
+                p = sprite1.get();
+                break;
             case FANTA:
                 p = fanta.get();
+                break;
+            case FANTA1:
+                p = fanta1.get();
                 break;
             case SUPER8:
                 p = super8.get();
@@ -163,7 +186,7 @@ public class Expendedor {
 
     /**
      * Método encargado de retornar el producto comprado
-     * @return se retorna el producto inicializado en {@link #comprarProducto(Moneda, TipoProducto)}
+     * @return se retorna el producto inicializado en {@link #comprarProducto(TipoProducto)}
      */
     public Producto getProducto() {
         Producto aux = this.productoComprado;
