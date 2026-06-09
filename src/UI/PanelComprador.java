@@ -1,5 +1,7 @@
 package UI;
 
+import Logica.Comprador;
+import Logica.Moneda;
 import Logica.TipoMoneda;
 
 import javax.swing.*;
@@ -26,11 +28,11 @@ public class PanelComprador extends JPanel {
             { INICIO_MONEDAS_X, INICIO_MONEDAS_Y + 3 * (TAMANO_MONEDA + MARGEN_MONEDAS), TAMANO_MONEDA, TAMANO_MONEDA, INICIO_BOTONES_AGREGAR_X, INICIO_BOTONES_AGREGAR_Y + 3 * (TAMANO_BOTON_AGREGAR + MARGEN_BOTON_AGREGAR), TAMANO_BOTON_AGREGAR, TAMANO_BOTON_AGREGAR },
     };
 
-    private static final int[] DENOMINACIONES = {
-            TipoMoneda.MONEDA100.getTipo(),
-            TipoMoneda.MONEDA500.getTipo(),
-            TipoMoneda.MONEDA1000.getTipo(),
-            TipoMoneda.MONEDA1500.getTipo()
+    private static final TipoMoneda[] DENOMINACIONES = {
+            TipoMoneda.MONEDA100,
+            TipoMoneda.MONEDA500,
+            TipoMoneda.MONEDA1000,
+            TipoMoneda.MONEDA1500
     };
 
     private MonedaSeleccionada monedaSeleccionada = null;
@@ -40,8 +42,11 @@ public class PanelComprador extends JPanel {
     private final JLabel[] labelContadores = new JLabel[4];
 
     private BufferedImage fondo;
+    private Comprador comprador = new Comprador();
+
 
     public PanelComprador() {
+
         try {
             URL fondoUrl = getClass().getClassLoader().getResource("Sprites/Comprador.png");
             if (fondoUrl != null) {
@@ -74,12 +79,14 @@ public class PanelComprador extends JPanel {
 
     private void crearFilas() {
         for (int i = 0; i < FILAS_MONEDA.length; i++) {
-            final int idx = i;
+            TipoMoneda aux = TipoMoneda.buscarPorTipo(i);
+            final int idx = comprador.getCantidadMoneda(aux);
+            final int pos = i;
             int[] f = FILAS_MONEDA[i];
 
             MonedaSeleccionada monedaSeleccionada = new MonedaSeleccionada(
                     "PressedButtons/MonedaSeleccionada.png",
-                    f[2], f[3], idx
+                    f[2], f[3], pos
             );
             monedaSeleccionada.setBounds(f[0], f[1], f[2], f[3]);
             monedaSeleccionada.addActionListener(e ->
@@ -94,12 +101,22 @@ public class PanelComprador extends JPanel {
             botonGenerar.setBounds(f[4], f[5], f[6], f[7]);
             //-> aca hay que poner la logica de generar una moneda para el comprador. Se puso un contador de enteros pero la idea es que realmente se genere una moneda)
             botonGenerar.addActionListener(e -> {
-                contadores[idx]++;
-                labelContadores[idx].setText(String.valueOf(contadores[idx]));
+                try {
+                    // Java te obliga a envolver esto porque puede lanzar PagoIncorrectoException
+                    comprador.agregarMoneda(aux);
+
+                    // Si la moneda se agrega con éxito, actualizas la interfaz gráfica
+                    int nuevaCantidad = comprador.getCantidadMoneda(aux);
+                    labelContadores[pos].setText(String.valueOf(nuevaCantidad));
+
+                } catch (Logica.PagoIncorrectoException ex) {
+                    System.err.println("Error al procesar la moneda: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "No se pudo agregar la moneda: " + ex.getMessage());
+                }
             });
             add(botonGenerar);
 
-            JLabel label = new JLabel("0", SwingConstants.CENTER);
+            JLabel label = new JLabel(String.valueOf(idx), SwingConstants.CENTER);
             label.setFont(new Font("Monospaced", Font.BOLD, 13));
             label.setForeground(new Color(0x333333));
 
@@ -123,8 +140,8 @@ public class PanelComprador extends JPanel {
         System.out.println("Moneda seleccionada: $" + getDenominacionSeleccionada());
     }
 
-    public int getDenominacionSeleccionada() {
-        if (indiceMonedaSeleccionada < 0) return -1;
+    public TipoMoneda getDenominacionSeleccionada() {
+        if (indiceMonedaSeleccionada < 0) return null;
         return DENOMINACIONES[indiceMonedaSeleccionada];
     }
 
@@ -235,5 +252,30 @@ public class PanelComprador extends JPanel {
                 g.drawImage(spritePresionado.getImage(), 0, 0, getWidth(), getHeight(), this);
             }
         }
+    }
+
+    public Moneda ingresarMoneda(){
+        TipoMoneda tipoMoneda = getDenominacionSeleccionada();
+        if(tipoMoneda != null){
+            return comprador.retirarMoneda(tipoMoneda);
+        }
+        return null;
+    }
+
+    public void actualizarContadores() {
+        for (int i = 0; i < FILAS_MONEDA.length; i++) {
+            // Buscamos el tipo de moneda correspondiente a esta fila
+            TipoMoneda aux = TipoMoneda.buscarPorTipo(i);
+
+            // Pedimos al comprador la cantidad real y actualizada de monedas
+            int nuevaCantidad = comprador.getCantidadMoneda(aux);
+
+            // Actualizamos el JLabel de la pantalla si el array ya está inicializado
+            if (labelContadores[i] != null) {
+                labelContadores[i].setText(String.valueOf(nuevaCantidad));
+            }
+        }
+        // Forzamos a Swing a redibujar visualmente el panel por si acaso
+        this.repaint();
     }
 }
