@@ -11,8 +11,10 @@ public class Ventana extends JFrame {
 
         setLayout(new GridLayout(1,2));
 
-        add(new PanelComprador());
-        add(new PanelExpendedor());
+        PanelComprador panelComprador = new PanelComprador();
+        PanelExpendedor panelExpendedor = new PanelExpendedor(panelComprador);
+        add(panelComprador);
+        add(panelExpendedor);
 
         pack();
         setLocationRelativeTo(null);
