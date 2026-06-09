@@ -13,9 +13,8 @@ public class Comprador {
     /**
      * Constructor que determina el producto consumido y el dinero de vuelto total
      * además también se inicializa un monedero para guardar distintos tipos de monedas
-     * @param exp Expendedor ingresado
      */
-    public Comprador(Expendedor exp) {
+    public Comprador() {
         this.monedero = new ArrayList<>();
 
         for (TipoMoneda t : TipoMoneda.values()) {
@@ -27,9 +26,25 @@ public class Comprador {
             this.monedero.add(nuevoDeposito);
         }
 
-        /** Variable de tipo Producto que se saca del expendedor ingresado */
-        Producto producto = exp.getProducto();
+
         
+
+
+    }
+
+    /**
+     * Método que retorna el vuelto calculado en {@link #Comprador()}
+     * @return el vuelto total
+     */
+    public int cuantoVuelto() {
+        return this.vuelto;
+    }
+
+    /**
+     * Método que retorna el producto consumido en {@link #Comprador()}
+     * @return producto consumido como variable String
+     */
+    public String queConsumiste(Producto producto) {
         /** Si pudo realizar una compra, se consume el producto */
         if (producto instanceof Bebida bebida) {
             this.sonido = bebida.beber();
@@ -38,23 +53,7 @@ public class Comprador {
         } else {
             this.sonido = null;
         }
-
-    }
-
-    /**
-     * Método que retorna el vuelto calculado en {@link #Comprador(Expendedor)}
-     * @return el vuelto total
-     */
-    public int cuantoVuelto() {
-        return this.vuelto;
-    }
-
-    /**
-     * Método que retorna el producto consumido en {@link #Comprador(Expendedor)}
-     * @return producto consumido como variable String
-     */
-    public String queConsumiste() {
-        return this.sonido;
+        return null;
     }
 
     /**
