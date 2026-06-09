@@ -143,13 +143,13 @@ public class PanelExpendedor extends JPanel {
         // del monedero del comprador para realizar una compra
         // hasta ahora se ocupa una moneda auxiliar
         private Moneda1500 monedaAuxiliar = new Moneda1500();
+        private Expendedor expendedorPanel = new Expendedor(2);
+        private Producto productoComprado = null;
 
         void onTeclaPresionada(String tecla) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
             switch (tecla) {
                 case "Aceptar":
                     System.out.println("Código: " + buffer);
-                    Expendedor expendedorPanel = new Expendedor(9);
-                    Comprador compradorLocal = new Comprador(expendedorPanel);
 
                     // aquí se podría sacar la moneda a partir del panel comprador o compradorLocal
                     // es más seguro ir por seleccionarMoneda en PanelComprador
@@ -160,17 +160,22 @@ public class PanelExpendedor extends JPanel {
                         switch (buffer.toString()){
                             case "1":
                             case "4":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.COCA); break;
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.COCA);
+                                productoComprado = expendedorPanel.getProducto(); break;
                             case "2":
                             case "5":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.FANTA); break;
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.FANTA);
+                                productoComprado = expendedorPanel.getProducto(); break;
                             case "3":
                             case "6":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SPRITE); break;
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SPRITE);
+                                productoComprado = expendedorPanel.getProducto(); break;
                             case "7":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SNICKERS); break;
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SNICKERS);
+                                productoComprado = expendedorPanel.getProducto(); break;
                             case "8":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SUPER8); break;
+                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SUPER8);
+                                productoComprado = expendedorPanel.getProducto(); break;
                             case "9":
                                 // Producto nulo opcional, puede servir para consumir y dar una excepción
                                 Producto ProductoNulo = null; break;
