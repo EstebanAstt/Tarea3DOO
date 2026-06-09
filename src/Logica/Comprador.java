@@ -69,6 +69,11 @@ public class Comprador {
         return null;
     }
 
+    public int getCantidadMoneda(TipoMoneda tipo_moneda){
+        int indice = tipo_moneda.getTipo();
+        return monedero.get(indice).getSize();
+    }
+
     /**
      * Método encargado de agregar un tipo de moneda seleccionada al monedero
      * @param tipo_moneda la cual corresponde a una variable enum TipoMoneda
