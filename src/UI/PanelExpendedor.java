@@ -39,9 +39,11 @@ public class PanelExpendedor extends JPanel {
 
 
     private PanelComprador panelComprador;
+    private Expendedor expendedor = new Expendedor(5);
+
     public PanelExpendedor(PanelComprador panelComprador) {
         this.panelComprador = panelComprador;
-        PanelMaquina panel = new PanelMaquina(this.panelComprador);
+        PanelMaquina panel = new PanelMaquina(this.panelComprador,this.expendedor);
         add(panel);
 
     }
@@ -55,9 +57,11 @@ public class PanelExpendedor extends JPanel {
         private BufferedImage imagenFondo;
         private final StringBuilder buffer = new StringBuilder();
         private final PanelComprador panelComprador;
+        private final Expendedor expendedor;
 
-        public PanelMaquina(PanelComprador panelComprador) {
+        public PanelMaquina(PanelComprador panelComprador, Expendedor expendedor) {
             this.panelComprador = panelComprador;
+            this.expendedor = expendedor;
 
             try {
                 imagenFondo  = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Expendedor.png"));
@@ -204,6 +208,7 @@ public class PanelExpendedor extends JPanel {
                     break;
                 case "IngresarMoneda":
                     Moneda aux = panelComprador.ingresarMoneda();
+                    expendedor.agregarMoneda(aux);
                     panelComprador.actualizarContadores();
 
                     break;
