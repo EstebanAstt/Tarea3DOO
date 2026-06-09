@@ -5,7 +5,7 @@ package Logica;
  * Las clases de Moneda tienen un número de serie que corresponde a su hashCode
  * Además cada subclase de Moneda tiene un valor distinto al retornar getValor
  */
-abstract class Moneda {
+ public abstract class Moneda {
     private static int NUM_SERIE = 1;
     private int serie;
     public Moneda(){
