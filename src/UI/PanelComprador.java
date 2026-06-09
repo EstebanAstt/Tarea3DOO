@@ -102,10 +102,9 @@ public class PanelComprador extends JPanel {
             //-> aca hay que poner la logica de generar una moneda para el comprador. Se puso un contador de enteros pero la idea es que realmente se genere una moneda)
             botonGenerar.addActionListener(e -> {
                 try {
-                    // Java te obliga a envolver esto porque puede lanzar PagoIncorrectoException
                     comprador.agregarMoneda(aux);
 
-                    // Si la moneda se agrega con éxito, actualizas la interfaz gráfica
+                    // Si la moneda se agrega con éxito, se actualiza la interfaz gráfica
                     int nuevaCantidad = comprador.getCantidadMoneda(aux);
                     labelContadores[pos].setText(String.valueOf(nuevaCantidad));
 
