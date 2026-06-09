@@ -66,15 +66,6 @@ public class Expendedor {
              */
             throw new PagoIncorrectoException();
         }
-
-        if (m.getValor() < precioProductos) {
-            /**
-             * @throws PagoInsuficienteException se lanza si el dinero no alcanza para comprar el producto solicitado
-             */
-            monVu.add(m);
-            throw new PagoInsuficienteException();
-        }
-
         /**
          * Aquí una aclaración importante y es porque se hace uso de dos switch
          * en principio es innecesario, porque en un switch se define el precio del producto y en el otro
@@ -104,6 +95,14 @@ public class Expendedor {
                 monVu.add(m);
         }
 
+        if (getCantidadIngresada() < precioProductos) {
+            /**
+             * @throws PagoInsuficienteException se lanza si el dinero no alcanza para comprar el producto solicitado
+             */
+            vaciarMonTemporal(false);
+            throw new PagoInsuficienteException();
+        }
+
         /** Se inicializa un producto local nulo */
         Producto p = null;
         switch (cual) {
@@ -128,7 +127,7 @@ public class Expendedor {
             /**
              * @throws NoHayProductoException se lanza si no queda producto
              */
-            monVu.add(m);
+            vaciarMonTemporal(false);
             throw new NoHayProductoException();
         }
 
@@ -139,10 +138,11 @@ public class Expendedor {
          * @param diff es el vuelto, el cual no se retorna (porque lo único que se retorna es el producto p)
          * si no que se almacena en un deposito el cual se rellena con monedas de 100 hasta completar el vuelto
          */
-        int diff = m.getValor() - precioProductos; //con esto se crea el vuelto y se almacena en monedas de 100
+        int diff = getCantidadIngresada() - precioProductos; //con esto se crea el vuelto y se almacena en monedas de 100
         for(int i = 0; i < diff; i+=100){
             monVu.add(new Moneda100());
         }
+        vaciarMonTemporal(true);
     }
 
     /**
@@ -162,6 +162,29 @@ public class Expendedor {
      * @return se retorna el producto inicializado en {@link #comprarProducto(Moneda, TipoProducto)}
      */
     public Producto getProducto() {
-        return productoComprado;
+        Producto aux = this.productoComprado;
+        this.productoComprado = null;
+        return aux;
+    }
+
+    private void vaciarMonTemporal(boolean verifica_compra){
+        while(monTemporal.getSize() > 0){
+            if(verifica_compra) {
+                Moneda moneda = monTemporal.get();
+                monGuardadas.add(moneda);
+            } else {
+                Moneda moneda = monTemporal.get();
+                monVu.add(moneda);
+            }
+        }
+    }
+
+    private int getCantidadIngresada(){
+        int suma = 0;
+        for(int i = 0 ; i < monTemporal.getSize() ; i++){
+            Moneda m = monTemporal.peek(i);
+            suma += m.getValor();
+        }
+        return suma;
     }
 }
