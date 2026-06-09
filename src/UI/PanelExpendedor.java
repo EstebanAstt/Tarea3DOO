@@ -151,20 +151,23 @@ public class PanelExpendedor extends JPanel {
          * @param tecla
          */
 
-        // Esta moneda se borra después, se debe ocupar una moneda sacada
-        // del monedero del comprador para realizar una compra
-        // hasta ahora se ocupa una moneda auxiliar
-        private Moneda1500 monedaAuxiliar = new Moneda1500();
-        private Expendedor expendedorPanel = new Expendedor(2);
         private Producto productoComprado = null;
 
+        /**
+         * Método que se encarga de dar una función a cada botón del expendedor
+         * @param tecla Tecla presionada por el usuario
+         * @throws PagoIncorrectoException
+         * @throws PagoInsuficienteException
+         * @throws NoHayProductoException
+         */
         void onTeclaPresionada(String tecla) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
+            /** Moneda que cambia de valor cuando se ingresa al expendedor*/
+            Moneda aux = null;
+
+            // arreglar problema de "Moneda invalida al presionar Aceptar después de IngresarMoneda"
             switch (tecla) {
                 case "Aceptar":
                     System.out.println("Código: " + buffer);
-
-                    // aquí se podría sacar la moneda a partir del panel comprador o compradorLocal
-                    // es más seguro ir por seleccionarMoneda en PanelComprador
 
                     /** A partir del buffer cuando se presiona uno de los botones, se saca el producto
                      * pedido desde su respectivo depósito */
@@ -172,24 +175,24 @@ public class PanelExpendedor extends JPanel {
                         switch (buffer.toString()){
                             case "1":
                             case "4":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.COCA);
-                                productoComprado = expendedorPanel.getProducto(); break;
+                                expendedor.comprarProducto(aux, TipoProducto.COCA);
+                                productoComprado = expendedor.getProducto(); break;
                             case "2":
                             case "5":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.FANTA);
-                                productoComprado = expendedorPanel.getProducto(); break;
+                                expendedor.comprarProducto(aux, TipoProducto.FANTA);
+                                productoComprado = expendedor.getProducto(); break;
                             case "3":
                             case "6":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SPRITE);
-                                productoComprado = expendedorPanel.getProducto(); break;
+                                expendedor.comprarProducto(aux, TipoProducto.SPRITE);
+                                productoComprado = expendedor.getProducto(); break;
                             case "7":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SNICKERS);
-                                productoComprado = expendedorPanel.getProducto(); break;
+                                expendedor.comprarProducto(aux, TipoProducto.SNICKERS);
+                                productoComprado = expendedor.getProducto(); break;
                             case "8":
-                                expendedorPanel.comprarProducto(monedaAuxiliar, TipoProducto.SUPER8);
-                                productoComprado = expendedorPanel.getProducto(); break;
+                                expendedor.comprarProducto(aux, TipoProducto.SUPER8);
+                                productoComprado = expendedor.getProducto(); break;
                             case "9":
-                                // Producto nulo opcional, puede servir para consumir y dar una excepción
+                               /** Producto Nulo */
                                 Producto ProductoNulo = null; break;
                             default: break;
                         }
@@ -207,10 +210,10 @@ public class PanelExpendedor extends JPanel {
                     if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
                     break;
                 case "IngresarMoneda":
-                    Moneda aux = panelComprador.ingresarMoneda();
+                    aux = panelComprador.ingresarMoneda();
                     expendedor.agregarMoneda(aux);
+                    JOptionPane.showMessageDialog(this, "Ingresaste una: " + aux.getTipoMoneda());
                     panelComprador.actualizarContadores();
-
                     break;
                 default:
                     if (buffer.length() < 1) buffer.append(tecla);
