@@ -223,4 +223,31 @@ public class Expendedor {
         }
         return suma;
     }
+
+    public int getCantidadEnSlot(TipoProducto tipoProducto){
+        if (tipoProducto == null) {
+            return 0;
+        }
+
+        switch (tipoProducto) {
+            case COCA:
+                return cocacola.getSize();
+            case COCA1:
+                return cocacola1.getSize();
+            case SPRITE:
+                return sprite.getSize();
+            case SPRITE1:
+                return sprite1.getSize();
+            case FANTA:
+                return fanta.getSize();
+            case FANTA1:
+                return fanta1.getSize();
+            case SUPER8:
+                return super8.getSize();
+            case SNICKERS:
+                return snickers.getSize();
+            default:
+                return 0;
+        }
+    }
 }
