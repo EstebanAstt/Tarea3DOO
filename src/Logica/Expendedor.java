@@ -153,6 +153,10 @@ public class Expendedor {
         return monVu.get();
     }
 
+    /**
+     * Agrega una moneda temporal al depósito de monedas temporales
+     * @param moneda variable Moneda ingresada
+     */
     public void agregarMoneda(Moneda moneda){
         if(moneda != null){monTemporal.add(moneda);}
     }
@@ -167,6 +171,11 @@ public class Expendedor {
         return aux;
     }
 
+    /**
+     * Se toma una moneda de monTemporal y se reparte entre monGuardadas o monVu
+     * dependiendo si la compra fue exitosa o no
+     * @param verifica_compra variable booleana que verifica si se realizó la compra
+     */
     private void vaciarMonTemporal(boolean verifica_compra){
         while(monTemporal.getSize() > 0){
             if(verifica_compra) {
@@ -179,6 +188,10 @@ public class Expendedor {
         }
     }
 
+    /**
+     * Calcula suma el valor de las monedas de monTemporal y retorna ese mismo valor
+     * @return suma total de las monedas
+     */
     private int getCantidadIngresada(){
         int suma = 0;
         for(int i = 0 ; i < monTemporal.getSize() ; i++){
