@@ -25,15 +25,10 @@ public class Comprador {
             }
             this.monedero.add(nuevoDeposito);
         }
-
-
-        
-
-
     }
 
     /**
-     * Método que retorna el vuelto calculado en {@link #Comprador()}
+     * Retorna el vuelto calculado en {@link #Comprador()}
      * @return el vuelto total
      */
     public int cuantoVuelto() {
@@ -41,7 +36,7 @@ public class Comprador {
     }
 
     /**
-     * Método que retorna el producto consumido en {@link #Comprador()}
+     * Retorna el producto consumido en {@link #Comprador()}
      * @return producto consumido como variable String
      */
     public String queConsumiste(Producto producto) {
@@ -57,7 +52,7 @@ public class Comprador {
     }
 
     /**
-     * Método que se encarga de retirar una moneda del monedero
+     * Se encarga de retirar una moneda del monedero
      * @param tipo_moneda TipoMoneda que se quiere retirar
      * @return se retorna moneda retirada
      */
@@ -69,13 +64,18 @@ public class Comprador {
         return null;
     }
 
+    /**
+     * Retorna la cantidad de monedas en el monedero actual
+     * @param tipo_moneda variable Tipo_Moneda para posteriormente sacar el tipo
+     * @return el tamaño final como int
+     */
     public int getCantidadMoneda(TipoMoneda tipo_moneda){
         int indice = tipo_moneda.getTipo();
         return monedero.get(indice).getSize();
     }
 
     /**
-     * Método encargado de agregar un tipo de moneda seleccionada al monedero
+     * Se encarga de agregar un tipo de moneda seleccionada al monedero
      * @param tipo_moneda la cual corresponde a una variable enum TipoMoneda
      * @throws PagoIncorrectoException se lanza cuando TipoMoneda es nulo
      */
