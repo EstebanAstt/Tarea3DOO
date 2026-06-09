@@ -25,4 +25,14 @@ public enum TipoMoneda {
     public Moneda crearMoneda() {
         return this.creador.get();
     }
+
+    public static TipoMoneda buscarPorTipo(int id) {
+        for (TipoMoneda m : TipoMoneda.values()) {
+            if (m.getTipo() == id) {
+                return m;
+            }
+        }
+
+        return null;
+    }
 }
