@@ -9,6 +9,7 @@ public class Comprador {
     private String sonido;
     private int vuelto;
     private ArrayList<Deposito<Moneda>> monedero;
+    private Producto producto;
 
     /**
      * Constructor que determina el producto consumido y el dinero de vuelto total
@@ -35,15 +36,18 @@ public class Comprador {
         return this.vuelto;
     }
 
+    public void setProducto(Producto producto){
+        this.producto = producto;
+    }
     /**
      * Retorna el producto consumido en {@link #Comprador()}
      * @return producto consumido como variable String
      */
-    public String queConsumiste(Producto producto) {
+    public String queConsumiste() {
         /** Si pudo realizar una compra, se consume el producto */
-        if (producto instanceof Bebida bebida) {
+        if (this.producto instanceof Bebida bebida) {
             this.sonido = bebida.beber();
-        } else if (producto instanceof Dulce dulce){
+        } else if (this.producto instanceof Dulce dulce){
             this.sonido = dulce.comer();
         } else {
             this.sonido = null;
