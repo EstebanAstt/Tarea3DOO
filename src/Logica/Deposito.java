@@ -39,4 +39,11 @@ public class Deposito<T> {
     public int getSize(){
         return dep.size();
     }
+
+    public T peek(int index) {
+        if (index >= 0 && index < dep.size()) {
+            return dep.get(index);
+        }
+        return null;
+    }
 }
