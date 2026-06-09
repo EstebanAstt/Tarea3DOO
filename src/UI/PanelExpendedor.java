@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import java.io.File;
 import java.net.URL;
 
 /**
@@ -33,8 +32,15 @@ public class PanelExpendedor extends JPanel {
     public static final int TAMANO_MONEDA = 30;
     public static final int INICIO_BOTONES_NUMERICOS_X = 328;
     public static final int INICIO_BOTONES_NUMERICOS_Y = 80;
-    public PanelExpendedor() {
+    public static final int TAMANO_BOTON_INGRESAR_MONEDA_X = 20;
+    public static final int TAMANO_BOTON_INGRESAR_MONEDA_Y = 38;
+    public static final int INICIO_BOTON_INGESAR_MONEDA_X = 363;
+    public static final int INICIO_BOTON_INGESAR_MONEDA_Y  = 179;
 
+
+    private PanelComprador panelComprador;
+    public PanelExpendedor(PanelComprador panelComprador) {
+        this.panelComprador = panelComprador;
         PanelMaquina panel = new PanelMaquina();
         add(panel);
 
@@ -109,6 +115,7 @@ public class PanelExpendedor extends JPanel {
                     {   "0", INICIO_BOTONES_NUMERICOS_X, INICIO_BOTONES_NUMERICOS_Y + 3 * TAMANO_BOTON, TAMANO_BOTON, TAMANO_BOTON },
                     {   "Borrar", INICIO_BOTONES_NUMERICOS_X + TAMANO_BOTON, INICIO_BOTONES_NUMERICOS_Y + 3 * TAMANO_BOTON, TAMANO_BOTON, TAMANO_BOTON },
                     {  "Aceptar", INICIO_BOTONES_NUMERICOS_X + 2 * TAMANO_BOTON, INICIO_BOTONES_NUMERICOS_Y + 3 * TAMANO_BOTON, TAMANO_BOTON, TAMANO_BOTON },
+                    {  "IngresarMoneda", INICIO_BOTON_INGESAR_MONEDA_X, INICIO_BOTON_INGESAR_MONEDA_Y, TAMANO_BOTON_INGRESAR_MONEDA_X, TAMANO_BOTON_INGRESAR_MONEDA_Y}
             };
 
             for (Object[] t : teclas) {
@@ -193,6 +200,9 @@ public class PanelExpendedor extends JPanel {
                     break;
                 case "Borrar":
                     if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
+                    break;
+                case "IngresarMoneda":
+
                     break;
                 default:
                     if (buffer.length() < 1) buffer.append(tecla);
