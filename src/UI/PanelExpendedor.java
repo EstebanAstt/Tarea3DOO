@@ -27,11 +27,42 @@ import java.net.URL;
  *
  */
 public class PanelExpendedor extends JPanel {
+    public static final int CANTIDAD_PRODUCTOS = 8;
+    public static final int TAMANO_MONEDA = 30;
+
+    public static final int TAMANO_LATA_X = 33;
+    public static final int TAMANO_LATA_Y = 65;
+    public static final int TAMANO_SNICKERS_X = 49;
+    public static final int TAMANO_SNICKERS_Y = 15;
+    public static final int POSICION_SNICKERS_X = 133;
+    public static final int POSICION_SNICKERS_Y = 330;
+    public static final int TAMANO_SUPER8 = 50;
+    public static final int POSICION_SUPER8_X = 56;
+    public static final int POSICION_SUPER8_Y = 300;
+    public static final int INICIO_SPRITES_PRODUCTOS_X = 63;
+    public static final int INICIO_SPRITES_PRODUCTOS_Y = 53;
+    public static final int MARGEN_SPRITES_PRODUCTOS_X = 77;
+    public static final int MARGEN_SPRITES_PRODUCTOS_Y = 117;
+
+    public static final int OFFSET_X = 3;
+    public static final int OFFSET_Y = -6;
+
+    public static final int[][] SPRITES_PRODUCTOS = {
+            {INICIO_SPRITES_PRODUCTOS_X                                 , INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
+            {INICIO_SPRITES_PRODUCTOS_X + MARGEN_SPRITES_PRODUCTOS_X    , INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
+            {INICIO_SPRITES_PRODUCTOS_X + 2*(MARGEN_SPRITES_PRODUCTOS_X), INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
+            {INICIO_SPRITES_PRODUCTOS_X                                 , INICIO_SPRITES_PRODUCTOS_Y + MARGEN_SPRITES_PRODUCTOS_Y, TAMANO_LATA_X    , TAMANO_LATA_Y    },
+            {INICIO_SPRITES_PRODUCTOS_X + MARGEN_SPRITES_PRODUCTOS_X    , INICIO_SPRITES_PRODUCTOS_Y + MARGEN_SPRITES_PRODUCTOS_Y, TAMANO_LATA_X    , TAMANO_LATA_Y    },
+            {INICIO_SPRITES_PRODUCTOS_X + 2*(MARGEN_SPRITES_PRODUCTOS_X), INICIO_SPRITES_PRODUCTOS_Y + MARGEN_SPRITES_PRODUCTOS_Y, TAMANO_LATA_X    , TAMANO_LATA_Y    },
+            {POSICION_SUPER8_X                                          , POSICION_SUPER8_Y                                      , TAMANO_SUPER8    , TAMANO_SUPER8    },
+            {POSICION_SNICKERS_X                                        , POSICION_SNICKERS_Y                                    , TAMANO_SNICKERS_X, TAMANO_SNICKERS_Y}
+
+    };
 
     public static final int TAMANO_BOTON = 20;
-    public static final int TAMANO_MONEDA = 30;
     public static final int INICIO_BOTONES_NUMERICOS_X = 328;
     public static final int INICIO_BOTONES_NUMERICOS_Y = 80;
+
     public static final int TAMANO_BOTON_INGRESAR_MONEDA_X = 20;
     public static final int TAMANO_BOTON_INGRESAR_MONEDA_Y = 38;
     public static final int INICIO_BOTON_INGESAR_MONEDA_X = 363;
@@ -59,14 +90,25 @@ public class PanelExpendedor extends JPanel {
         private final PanelComprador panelComprador;
         private final Expendedor expendedor;
 
+        private BufferedImage cocaColaSprite;
+        private BufferedImage fantaSprite;
+        private BufferedImage spriteSprite;
+        private BufferedImage snickersSprite;
+        private BufferedImage super8Sprite;
+
         public PanelMaquina(PanelComprador panelComprador, Expendedor expendedor) {
             this.panelComprador = panelComprador;
             this.expendedor = expendedor;
 
             try {
                 imagenFondo  = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Expendedor.png"));
+                cocaColaSprite = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Cocacola.png"));
+                fantaSprite = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Fanta.png"));
+                spriteSprite = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Sprite.png"));
+                snickersSprite = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Snickers.png"));
+                super8Sprite = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Super8.png"));
             } catch (Exception e) {
-                System.err.println("No se encontró Expendedor.png: " + e.getMessage());
+                System.err.println("No se encontró el png: " + e.getMessage());
             }
 
             /*Dato: ese signo de interrogacion es un if - else pero comprimido para ahorrar lineas de codigo
@@ -82,7 +124,51 @@ public class PanelExpendedor extends JPanel {
 
             crearBotones();
         }
+        private BufferedImage obtenerSprite(int slot) {
+            switch (slot) {
+                case 1:
+                case 4:
+                    return cocaColaSprite;
 
+                case 2:
+                case 5:
+                    return fantaSprite;
+
+                case 3:
+                case 6:
+                    return spriteSprite;
+
+                case 7:
+                    return super8Sprite;
+
+                case 8:
+                    return snickersSprite;
+
+                default:
+                    return null;
+            }
+        }
+        private void dibujarProductos(Graphics g) {
+
+            for (int slot = 1; slot <= CANTIDAD_PRODUCTOS; slot++) {
+
+                int cantidad = expendedor.getCantidadEnSlot(TipoProducto.buscarPorTipo(slot));
+
+                BufferedImage sprite = obtenerSprite(slot);
+
+                if (sprite == null) continue;
+
+                int baseX = SPRITES_PRODUCTOS[slot-1][0];
+                int baseY = SPRITES_PRODUCTOS[slot-1][1];
+
+                for (int i = cantidad - 1; i >= 0; i--) {
+                    int x = baseX + OFFSET_X * i;
+                    int y = baseY + OFFSET_Y * i;
+
+                    g.drawImage(sprite, x, y, this);
+                }
+            }
+        }
         /**
          *
          * @param g the <code>Graphics</code> object to protect se dibuja la imagen de fondo, es decir, del expendedor
@@ -90,7 +176,8 @@ public class PanelExpendedor extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (imagenFondo != null) {
+
+            if (imagenFondo != null ) {
                 // Dibuja la imagen ocupando todo el panel
                 g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
             } else {
@@ -98,6 +185,7 @@ public class PanelExpendedor extends JPanel {
                 g.setColor(new Color(0x8A8A8A));
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
+            dibujarProductos(g);
         }
 
         /**
