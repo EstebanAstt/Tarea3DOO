@@ -8,30 +8,16 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.net.URL;
 
-/**
- *<|-|>Cosas avanzadas por ahora:
- * -> Se muestra el expendedor en una ventana llamada Expendedor
- * -> Los botones del Expendedor funcionan y pueden poner un numero en forma de String (podria ser que se llame al
- * producto con un numero del 1 al 9 o bien que sea como un expendedor normal con numeracion mas compleja
- * (101,102,103,201...))
- *<|-|>Cosas que hay que añadir:
- * -> Mas comentarios
- * -> La logica detras del Expendedor
- * -> Traducir del numero ingresado a el producto que se quiera escoger (algo como un enum donde este almacenado donde
- * se ubica cada producto)
- * -> Detalles como el audio al presionar un boton
- * -> como vamos a hacer para que el expendedor reciba monedas, podria ser que se pinte un rectangulo blanco arriba de
- * los botones (esta el espacio) que indique el numero del producto y el dinero ingresado, y ya cuando se presione el
- * boton aceptar se aplique la logica de comprar producto
- * -> que el apartado de insertar moneda sea interactivo
- *
- */
+
 public class PanelExpendedor extends JPanel {
     public static final int CANTIDAD_PRODUCTOS = 8;
     public static final int TAMANO_MONEDA = 30;
 
+
     public static final int TAMANO_LATA_X = 33;
     public static final int TAMANO_LATA_Y = 65;
+
+
     public static final int TAMANO_SNICKERS_X = 49;
     public static final int TAMANO_SNICKERS_Y = 15;
     public static final int POSICION_SNICKERS_X = 133;
@@ -39,6 +25,8 @@ public class PanelExpendedor extends JPanel {
     public static final int TAMANO_SUPER8 = 50;
     public static final int POSICION_SUPER8_X = 56;
     public static final int POSICION_SUPER8_Y = 300;
+
+
     public static final int INICIO_SPRITES_PRODUCTOS_X = 63;
     public static final int INICIO_SPRITES_PRODUCTOS_Y = 53;
     public static final int MARGEN_SPRITES_PRODUCTOS_X = 77;
@@ -46,6 +34,11 @@ public class PanelExpendedor extends JPanel {
 
     public static final int OFFSET_X = 3;
     public static final int OFFSET_Y = -6;
+
+    public static final int BANDEJA_X = 26;
+    public static final int BANDEJA_Y = 492;
+    public static final int BANDEJA_TAMANO_X = 272;
+    public static final int BANDEJA_TAMANO_Y = 87;
 
     public static final int[][] SPRITES_PRODUCTOS = {
             {INICIO_SPRITES_PRODUCTOS_X                                 , INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
@@ -89,6 +82,7 @@ public class PanelExpendedor extends JPanel {
         private final StringBuilder buffer = new StringBuilder();
         private final PanelComprador panelComprador;
         private final Expendedor expendedor;
+        private JButton botonBandeja = null;
 
         private BufferedImage cocaColaSprite;
         private BufferedImage fantaSprite;
@@ -111,10 +105,7 @@ public class PanelExpendedor extends JPanel {
                 System.err.println("No se encontró el png: " + e.getMessage());
             }
 
-            /*Dato: ese signo de interrogacion es un if - else pero comprimido para ahorrar lineas de codigo
-                     condicion if        "?" Lo que se hace si se cumple la condicion ":" Lo que se hace si no se cumple la condicion
 
-             */
             int w = (imagenFondo != null) ? imagenFondo.getWidth()  : 400;
             int h = (imagenFondo != null) ? imagenFondo.getHeight() : 600;
             setPreferredSize(new Dimension(w, h));
@@ -272,8 +263,48 @@ public class PanelExpendedor extends JPanel {
                         expendedor.comprarProducto(tipoProducto);
                         productoComprado = expendedor.getProducto();
 
-                        JOptionPane.showMessageDialog(this, "Seleccionaste: " + tipoProducto);
+                        if (productoComprado != null) {
 
+                            if (botonBandeja != null) {
+                                remove(botonBandeja);
+                            }
+
+                            //Obtener la imagen correspondiente del producto comprado
+                            BufferedImage spriteProducto = obtenerSprite(productoSeleccionadoNum);
+
+                            //Crear un botón común y corriente configurado con la imagen
+                            botonBandeja = new JButton();
+                            botonBandeja.setBounds(BANDEJA_X, BANDEJA_Y, BANDEJA_TAMANO_X, BANDEJA_TAMANO_Y);
+
+                            // Configuración para que el botón sea invisible y solo muestre el Sprite
+                            botonBandeja.setContentAreaFilled(false);
+                            botonBandeja.setBorderPainted(false);
+                            botonBandeja.setFocusPainted(false);
+                            botonBandeja.setOpaque(false);
+                            botonBandeja.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                            // Ajustamos la imagen al tamaño estándar de la bandeja
+                            Image imagenEscalada = spriteProducto.getScaledInstance(BANDEJA_TAMANO_X, BANDEJA_TAMANO_Y, Image.SCALE_SMOOTH);
+                            botonBandeja.setIcon(new ImageIcon(spriteProducto));
+
+
+                            botonBandeja.addActionListener(ev -> {
+                                JOptionPane.showMessageDialog(this, "Has retirado tu producto exitosamente.");
+
+
+                                remove(botonBandeja); // Se remueve a sí mismo del contenedor principal
+                                botonBandeja = null;  // Limpiamos la referencia
+                                revalidate();         // Avisa a Swing del cambio estructural
+                                repaint();            // Redibuja la pantalla de inmediato
+                            });
+
+                            // Añadir el botón directamente al panel de la máquina
+                            add(botonBandeja);
+                            revalidate();
+                            repaint();
+                        }
+
+                        JOptionPane.showMessageDialog(this, "Seleccionaste: " + tipoProducto);
                     } catch (NumberFormatException e) {
                         JOptionPane.showMessageDialog(this, "Código numérico inválido.");
                     } catch (PagoIncorrectoException e) {
@@ -284,7 +315,7 @@ public class PanelExpendedor extends JPanel {
                         JOptionPane.showMessageDialog(this, "No hay más productos de este tipo");
                     }
 
-                    // 3. Limpiamos el buffer tras intentar la operación
+                    // Limpiamos el buffer tras intentar la operación
                     buffer.setLength(0);
                     break;
 
