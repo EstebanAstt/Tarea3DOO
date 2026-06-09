@@ -169,34 +169,25 @@ public class PanelExpendedor extends JPanel {
                 case "Aceptar":
                     System.out.println("Código: " + buffer);
 
-                    /** A partir del buffer cuando se presiona uno de los botones, se saca el producto
-                     * pedido desde su respectivo depósito */
+
+                    if (buffer.length() == 0) {
+                        JOptionPane.showMessageDialog(this, "Por favor ingrese un código numérico.");
+                        break;
+                    }
+
+
                     try {
-                        switch (buffer.toString()){
-                            case "1":
-                            case "4":
-                                expendedor.comprarProducto(aux, TipoProducto.COCA);
-                                productoComprado = expendedor.getProducto(); break;
-                            case "2":
-                            case "5":
-                                expendedor.comprarProducto(aux, TipoProducto.FANTA);
-                                productoComprado = expendedor.getProducto(); break;
-                            case "3":
-                            case "6":
-                                expendedor.comprarProducto(aux, TipoProducto.SPRITE);
-                                productoComprado = expendedor.getProducto(); break;
-                            case "7":
-                                expendedor.comprarProducto(aux, TipoProducto.SNICKERS);
-                                productoComprado = expendedor.getProducto(); break;
-                            case "8":
-                                expendedor.comprarProducto(aux, TipoProducto.SUPER8);
-                                productoComprado = expendedor.getProducto(); break;
-                            case "9":
-                               /** Producto Nulo */
-                                Producto ProductoNulo = null; break;
-                            default: break;
-                        }
-                        JOptionPane.showMessageDialog(this, "Seleccionaste: " + buffer);
+
+                        int productoSeleccionadoNum = Integer.parseInt(buffer.toString());
+                        TipoProducto tipoProducto = TipoProducto.buscarPorTipo(productoSeleccionadoNum);
+
+                        expendedor.comprarProducto(tipoProducto);
+                        productoComprado = expendedor.getProducto();
+
+                        JOptionPane.showMessageDialog(this, "Seleccionaste: " + tipoProducto);
+
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(this, "Código numérico inválido.");
                     } catch (PagoIncorrectoException e) {
                         JOptionPane.showMessageDialog(this, "Se ingresó una moneda inválida");
                     } catch (PagoInsuficienteException e) {
@@ -204,8 +195,11 @@ public class PanelExpendedor extends JPanel {
                     } catch (NoHayProductoException e) {
                         JOptionPane.showMessageDialog(this, "No hay más productos de este tipo");
                     }
+
+                    // 3. Limpiamos el buffer tras intentar la operación
                     buffer.setLength(0);
                     break;
+
                 case "Borrar":
                     if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
                     break;
