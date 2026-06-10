@@ -237,9 +237,7 @@ public class PanelExpendedor extends JPanel {
 
                     try {
                         onTeclaPresionada(label);
-                    } catch (Exception ex) {
-                        System.out.print("texto de prueba");
-                    }
+                    } catch (Exception ex) {}
                 });
                 add(boton);
             }
