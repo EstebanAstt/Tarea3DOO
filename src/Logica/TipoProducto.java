@@ -33,6 +33,7 @@ public enum TipoProducto {
      * Busca el tipo de producto a partir de su número
      * @param id variable int de identificación
      * @return retorna TipoProducto al tener su número
+     *
      */
     public static TipoProducto buscarPorTipo(int id) {
         for (TipoProducto p : TipoProducto.values()) {
