@@ -2,6 +2,7 @@ package UI;
 
 import Logica.Comprador;
 import Logica.Moneda;
+import Logica.Producto;
 import Logica.TipoMoneda;
 
 import javax.swing.*;
@@ -27,6 +28,12 @@ public class PanelComprador extends JPanel {
     public static final int INICIO_BOTONES_AGREGAR_Y = 30;
 
     /** Array que sirve como esqueleto para la ubicación y tamaño de las monedas */
+
+    public static final int SLOT_COMPRADOR_X = 202;
+    public static final int SLOT_COMPRADOR_Y = 450;
+    public static final int SLOT_COMPRADOR_TAMANO_X = 132;
+    public static final int SLOT_COMPRADOR_TAMANO_Y = 132;
+
     private static final int[][] FILAS_MONEDA = {
             { INICIO_MONEDAS_X, INICIO_MONEDAS_Y, TAMANO_MONEDA, TAMANO_MONEDA, INICIO_BOTONES_AGREGAR_X, INICIO_BOTONES_AGREGAR_Y, TAMANO_BOTON_AGREGAR, TAMANO_BOTON_AGREGAR },
             { INICIO_MONEDAS_X, INICIO_MONEDAS_Y + (TAMANO_MONEDA + MARGEN_MONEDAS), TAMANO_MONEDA, TAMANO_MONEDA, INICIO_BOTONES_AGREGAR_X, INICIO_BOTONES_AGREGAR_Y + (TAMANO_BOTON_AGREGAR + MARGEN_BOTON_AGREGAR), TAMANO_BOTON_AGREGAR, TAMANO_BOTON_AGREGAR },
@@ -56,6 +63,9 @@ public class PanelComprador extends JPanel {
     /**
      * Constructor que carga el fondo y las monedas
      */
+    private JButton botonConsumir = null;
+
+
     public PanelComprador() {
         try {
             URL fondoUrl = getClass().getClassLoader().getResource("Sprites/Comprador.png");
@@ -72,8 +82,10 @@ public class PanelComprador extends JPanel {
         int h = fondo != null ? fondo.getHeight() : 600;
         setPreferredSize(new Dimension(w, h));
         setLayout(null);
-
         crearFilas();
+        revalidate();
+        repaint();
+
     }
 
     @Override
@@ -332,5 +344,48 @@ public class PanelComprador extends JPanel {
         }
         /** Se redibuja el panel */
         this.repaint();
+    }
+
+    public void recibirProductoEnSlot(Producto producto, BufferedImage sprite) {
+        // Si el comprador se olvidó de consumir el anterior, lo removemos para no encimarlos
+        if (botonConsumir != null) {
+            remove(botonConsumir);
+        }
+
+        this.comprador.setProducto(producto);
+
+        botonConsumir = new JButton();
+        botonConsumir.setBounds(SLOT_COMPRADOR_X, SLOT_COMPRADOR_Y, SLOT_COMPRADOR_TAMANO_X, SLOT_COMPRADOR_TAMANO_Y);
+
+        botonConsumir.setIcon(new ImageIcon(sprite));
+
+        //Lo hacemos invisible para que solo se vea el producto flotando en el slot gris
+        botonConsumir.setContentAreaFilled(false);
+        botonConsumir.setBorderPainted(false);
+        botonConsumir.setFocusPainted(false);
+        botonConsumir.setOpaque(false);
+        botonConsumir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // 4. Acción de uso unico (Consumir el producto)
+        botonConsumir.addActionListener(ev -> {
+
+            String queConsumio = comprador.queConsumiste();
+            JOptionPane.showMessageDialog(this, queConsumio);
+
+
+            remove(botonConsumir); // Se auto-elimina del slot gris
+            botonConsumir = null;  // Limpiamos la referencia
+            revalidate();
+            repaint();
+        });
+
+
+        add(botonConsumir);
+        revalidate();
+        repaint();
+    }
+
+    public Comprador getComprador(){
+        return this.comprador;
     }
 }
