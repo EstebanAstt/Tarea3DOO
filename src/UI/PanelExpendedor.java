@@ -74,7 +74,7 @@ public class PanelExpendedor extends JPanel {
 
 
     private PanelComprador panelComprador;
-    private Expendedor expendedor = new Expendedor(5);
+    private Expendedor expendedor = new Expendedor(4);
 
     public PanelExpendedor(PanelComprador panelComprador) {
         this.panelComprador = panelComprador;
@@ -194,7 +194,21 @@ public class PanelExpendedor extends JPanel {
         private void dibujarProductos(Graphics g) {
 
             for (int slot = 1; slot <= CANTIDAD_PRODUCTOS; slot++) {
-
+                int offsetUptX = 0;
+                int offsetUptY = 0;
+                switch(slot%3){
+                    case 0:
+                        offsetUptX = (-1)*OFFSET_X;
+                        offsetUptY = OFFSET_Y;
+                        break;
+                    case 1:
+                        offsetUptX = OFFSET_X;
+                        offsetUptY = OFFSET_Y;
+                        break;
+                    case 2:
+                        offsetUptX = 0;
+                        offsetUptY = OFFSET_Y;
+                }
                 int cantidad = expendedor.getCantidadEnSlot(TipoProducto.buscarPorTipo(slot));
 
                 BufferedImage sprite = obtenerSprite(slot);
@@ -205,8 +219,8 @@ public class PanelExpendedor extends JPanel {
                 int baseY = SPRITES_PRODUCTOS[slot-1][1];
 
                 for (int i = cantidad - 1; i >= 0; i--) {
-                    int x = baseX + OFFSET_X * i;
-                    int y = baseY + OFFSET_Y * i;
+                    int x = baseX + offsetUptX * i;
+                    int y = baseY + offsetUptY * i;
 
                     g.drawImage(sprite, x, y, this);
                 }
