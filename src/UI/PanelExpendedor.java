@@ -327,6 +327,12 @@ public class PanelExpendedor extends JPanel {
                         int productoSeleccionadoNum = Integer.parseInt(buffer.toString());
                         TipoProducto tipoProducto = TipoProducto.buscarPorTipo(productoSeleccionadoNum);
 
+                        if (tipoProducto == null) {
+                            JOptionPane.showMessageDialog(this, "El slot " + productoSeleccionadoNum + " no existe.");
+                            buffer.setLength(0);
+                            break;
+                        }
+
                         expendedor.comprarProducto(tipoProducto);
                         productoComprado = expendedor.getProducto();
 
