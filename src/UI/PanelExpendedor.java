@@ -12,6 +12,7 @@ import java.net.URL;
 public class PanelExpendedor extends JPanel {
     public static final int CANTIDAD_PRODUCTOS = 8;
     public static final int TAMANO_MONEDA = 30;
+    public static final int MARGEN_MONEDA = 9;
 
 
     public static final int TAMANO_LATA_X = 33;
@@ -100,6 +101,8 @@ public class PanelExpendedor extends JPanel {
         private BufferedImage snickersSprite;
         private BufferedImage super8Sprite;
 
+        private int cantidadMonedasEnBandeja = 0;
+
         public PanelMaquina(PanelComprador panelComprador, Expendedor expendedor) {
             this.panelComprador = panelComprador;
             this.expendedor = expendedor;
@@ -109,7 +112,7 @@ public class PanelExpendedor extends JPanel {
 
             bandejaVuelto = new JPanel();
             bandejaVuelto.setBounds(BANDEJA_VUELTO_X, BANDEJA_VUELTO_Y, BANDEJA_VUELTO_TAMANO_X, BANDEJA_VUELTO_TAMANO_Y);
-            bandejaVuelto.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5)); // Alinea al centro y da 5px de espacio
+            bandejaVuelto.setLayout(null);
             bandejaVuelto.setOpaque(false);
             add(bandejaVuelto);
 
@@ -378,49 +381,59 @@ public class PanelExpendedor extends JPanel {
                 return null;
             }
         }
-
-        public void actualizarBandejaVuelto() {
-            Moneda m;
-
-            // Hacemos el while extrayendo monedas de una en una hasta que getVuelto() retorne null
-            while ((m = expendedor.getVuelto()) != null) {
-                final Moneda monedaExtraida = m; // Variable final requerida para la expresión lambda
-
-                //Identificamos el tipo de moneda para elegir su Sprite correspondiente
-                String rutaSprite = "Sprites/Moneda100.png"; // Ruta por defecto
-
-                if (monedaExtraida instanceof Logica.Moneda500) {
-                    rutaSprite = "Sprites/Moneda500.png";
-                } else if (monedaExtraida instanceof Logica.Moneda1000) {
-                    rutaSprite = "Sprites/Moneda1000.png";
-                } else if (monedaExtraida instanceof Logica.Moneda1500) {
-                    rutaSprite = "Sprites/Moneda1500.png";
-                }
-
-
-                CoinButton botonMoneda = new CoinButton(rutaSprite, TAMANO_MONEDA, () -> {
-                    try {
-
-                        this.comprador.agregarMoneda(monedaExtraida.getTipoMoneda());
-
-                        panelComprador.actualizarContadores();
-
-                    } catch (Logica.PagoIncorrectoException e) {
-                        System.err.println("Error al recoger la moneda: " + e.getMessage());
-                    }
-                });
-
-                //Hacemos visible el botón y lo agregamos a nuestra bandeja con FlowLayout
-                botonMoneda.setPreferredSize(new Dimension(TAMANO_MONEDA, TAMANO_MONEDA)); // Le damos el tamaño estándar para el Layout
-                botonMoneda.setVisible(true);
-
-                bandejaVuelto.add(botonMoneda);
+        private void reposicionarMonedas() {
+            Component[] monedas = bandejaVuelto.getComponents();
+            for (int i = 0; i < monedas.length; i++) {
+                boolean esPar = (i % 2 == 0);
+                int x    = esPar ? 0 : BANDEJA_VUELTO_TAMANO_X - TAMANO_MONEDA;
+                int fila = i / 2;
+                int y    = fila * MARGEN_MONEDA;
+                monedas[i].setBounds(x, y, TAMANO_MONEDA, TAMANO_MONEDA);
             }
-
-            //Refrescamos la bandeja para que Swing dibuje todas las monedas que cayeron juntas
+            cantidadMonedasEnBandeja = monedas.length; // sincroniza el contador con la realidad
             bandejaVuelto.revalidate();
             bandejaVuelto.repaint();
         }
+        public void actualizarBandejaVuelto() {
+            Moneda m;
+            while ((m = expendedor.getVuelto()) != null) {
+                final Moneda monedaExtraida = m;
+
+                String rutaSprite = "Sprites/Moneda100.png";
+                if (monedaExtraida instanceof Logica.Moneda500)  rutaSprite = "Sprites/Moneda500.png";
+                else if (monedaExtraida instanceof Logica.Moneda1000) rutaSprite = "Sprites/Moneda1000.png";
+                else if (monedaExtraida instanceof Logica.Moneda1500) rutaSprite = "Sprites/Moneda1500.png";
+
+                CoinButton botonMoneda = new CoinButton(rutaSprite, TAMANO_MONEDA, () -> {
+                    try {
+                        comprador.agregarMoneda(monedaExtraida.getTipoMoneda());
+                        panelComprador.actualizarContadores();
+                        cantidadMonedasEnBandeja--;
+                    } catch (Logica.PagoIncorrectoException e) {
+                        // Manejo del error en caso de que falle el ingreso
+                        System.err.println("Error al recoger la moneda: " + e.getMessage());
+                    }
+                });
+                botonMoneda.setOnRemovida(() -> reposicionarMonedas());
+                int OFFSET_PILA = MARGEN_MONEDA;
+                boolean esPar = (cantidadMonedasEnBandeja % 2 == 0); //esto es para almacenarlas a la izquierda o a la derecha para asi utilizar mejor el espacio
+                int x = esPar ? 0 : BANDEJA_VUELTO_TAMANO_X - TAMANO_MONEDA;
+                int y = cantidadMonedasEnBandeja * OFFSET_PILA;         // baja según cuántas hay
+
+                botonMoneda.setBounds(x, y, TAMANO_MONEDA, TAMANO_MONEDA);
+                botonMoneda.setPreferredSize(new Dimension(TAMANO_MONEDA, TAMANO_MONEDA));
+                botonMoneda.setVisible(true);
+
+                bandejaVuelto.add(botonMoneda, 0); //la nueva queda encima visualmente
+                cantidadMonedasEnBandeja++;
+                reposicionarMonedas();
+            }
+
+            bandejaVuelto.revalidate();
+            bandejaVuelto.repaint();
+        }
+
+
     }
 
     /**
@@ -474,6 +487,7 @@ public class PanelExpendedor extends JPanel {
         private float opacidad = 1.0f;
         private boolean usada = false;
         private final Runnable onRecoger;
+        private Runnable onRemovida;
 
         CoinButton(String rutaSprite, int size, Runnable onRecoger) {
             this.onRecoger = onRecoger;
@@ -497,6 +511,10 @@ public class PanelExpendedor extends JPanel {
             addActionListener(e -> recoger());
         }
 
+        void setOnRemovida(Runnable callback) {
+            this.onRemovida = callback;
+        }
+
         private void recoger() {
             if (usada) return;
 
@@ -518,6 +536,7 @@ public class PanelExpendedor extends JPanel {
                         padre.remove(this);
                         padre.repaint();
                     }
+                    if (onRemovida != null) onRemovida.run();
                 } else {
                     repaint();
                 }
