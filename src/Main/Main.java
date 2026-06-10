@@ -1,6 +1,6 @@
 package Main;
-
 import UI.Ventana;
+
 import javax.swing.SwingUtilities;
 
 /**
