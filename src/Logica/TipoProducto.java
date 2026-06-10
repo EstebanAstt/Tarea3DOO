@@ -11,7 +11,7 @@ public enum TipoProducto {
     FANTA1(1000,5),
     SPRITE1(1000,6),
     SUPER8(500, 7),
-    SNICKERS(1100, 8);
+    SNICKERS(1300, 8);
 
     private int valor;
     private int tipo;
