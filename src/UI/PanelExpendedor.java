@@ -46,6 +46,11 @@ public class PanelExpendedor extends JPanel {
     public static final int BANDEJA_VUELTO_TAMANO_X = 64;
     public static final int BANDEJA_VUELTO_TAMANO_Y = 180;
 
+    public static final int PANTALLA_X = 321;
+    public static final int PANTALLA_Y = 25;
+    public static final int PANTALLA_TAMANO_X = 72;
+    public static final int PANTALLA_TAMANO_Y = 42;
+
     public static final int[][] SPRITES_PRODUCTOS = {
             {INICIO_SPRITES_PRODUCTOS_X                                 , INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
             {INICIO_SPRITES_PRODUCTOS_X + MARGEN_SPRITES_PRODUCTOS_X    , INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
@@ -94,6 +99,8 @@ public class PanelExpendedor extends JPanel {
 
         private JButton botonBandeja = null;
         private JPanel bandejaVuelto;
+        private JLabel labelProducto;
+        private JLabel labelDinero;
 
         private BufferedImage cocaColaSprite;
         private BufferedImage fantaSprite;
@@ -113,6 +120,21 @@ public class PanelExpendedor extends JPanel {
             bandejaVuelto = new JPanel();
             bandejaVuelto.setBounds(BANDEJA_VUELTO_X, BANDEJA_VUELTO_Y, BANDEJA_VUELTO_TAMANO_X, BANDEJA_VUELTO_TAMANO_Y);
             bandejaVuelto.setLayout(null);
+
+            // ── Línea superior: producto elegido ──
+            labelProducto = new JLabel("---", SwingConstants.CENTER);
+            labelProducto.setFont(new Font("Monospaced", Font.BOLD, 11));
+            labelProducto.setForeground(new Color(0x00FF66));
+            labelProducto.setBounds(PANTALLA_X, PANTALLA_Y, PANTALLA_TAMANO_X, PANTALLA_TAMANO_Y / 2);
+            add(labelProducto);
+
+            // ── Línea inferior: dinero ingresado ──
+            labelDinero = new JLabel("$0", SwingConstants.CENTER);
+            labelDinero.setFont(new Font("Monospaced", Font.BOLD, 11));
+            labelDinero.setForeground(new Color(0x00FF66));
+            labelDinero.setBounds(PANTALLA_X, PANTALLA_Y + PANTALLA_TAMANO_Y / 2, PANTALLA_TAMANO_X, PANTALLA_TAMANO_Y / 2);
+            add(labelDinero);
+
             bandejaVuelto.setOpaque(false);
             add(bandejaVuelto);
 
@@ -136,6 +158,14 @@ public class PanelExpendedor extends JPanel {
             setLayout(null);
 
             crearBotones();
+        }
+        private void actualizarPantalla() {
+            // Producto: muestra el buffer o - si está vacío
+            labelProducto.setText(buffer.length() > 0 ? "Prod: " + buffer : "Prod: -");
+
+            // Dinero: pregunta al expendedor cuánto lleva acumulado
+            int dineroAcumulado = expendedor.getCantidadIngresada();
+            labelDinero.setText("$" + dineroAcumulado);
         }
         private BufferedImage obtenerSprite(int slot) {
             switch (slot) {
@@ -347,6 +377,7 @@ public class PanelExpendedor extends JPanel {
                     expendedor.agregarMoneda(aux);
                     JOptionPane.showMessageDialog(this, "Ingresaste una: " + aux.getTipoMoneda());
                     panelComprador.actualizarContadores();
+                    actualizarPantalla();
                     break;
                 default:
                     if (buffer.length() < 1) buffer.append(tecla);
@@ -354,6 +385,7 @@ public class PanelExpendedor extends JPanel {
             System.out.println("Buffer actual: " + buffer);
 
             /** Cuando existe display, se actualiza el estado del buffer */
+            actualizarPantalla();
             repaint();
         }
 
