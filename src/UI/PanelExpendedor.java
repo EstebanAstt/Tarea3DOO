@@ -232,8 +232,6 @@ public class PanelExpendedor extends JPanel {
                 boton.setBounds(x, y, w, h);
                 boton.addActionListener(e -> {
 
-                    // Por onTeclaPresionada, se crea excepción para no dar error
-                    // Opcional, luego borrar o cambiar por otra cosa
                     try {
                         onTeclaPresionada(label);
                     } catch (Exception ex) {
@@ -261,7 +259,7 @@ public class PanelExpendedor extends JPanel {
         void onTeclaPresionada(String tecla) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
             /** Moneda que cambia de valor cuando se ingresa al expendedor*/
 
-            // arreglar problema de "Moneda invalida al presionar Aceptar después de IngresarMoneda"
+
             switch (tecla) {
                 case "Aceptar":
                     System.out.println("Código: " + buffer);
@@ -388,7 +386,7 @@ public class PanelExpendedor extends JPanel {
             while ((m = expendedor.getVuelto()) != null) {
                 final Moneda monedaExtraida = m; // Variable final requerida para la expresión lambda
 
-                // 1. Identificamos el tipo de moneda para elegir su Sprite correspondiente
+                //Identificamos el tipo de moneda para elegir su Sprite correspondiente
                 String rutaSprite = "Sprites/Moneda100.png"; // Ruta por defecto
 
                 if (monedaExtraida instanceof Logica.Moneda500) {
@@ -399,7 +397,7 @@ public class PanelExpendedor extends JPanel {
                     rutaSprite = "Sprites/Moneda1500.png";
                 }
 
-                // 2. Creamos tu CoinButton pasando la ruta, el tamaño (ej: 30x30) y la acción al recoger
+
                 CoinButton botonMoneda = new CoinButton(rutaSprite, TAMANO_MONEDA, () -> {
                     try {
 
@@ -412,14 +410,14 @@ public class PanelExpendedor extends JPanel {
                     }
                 });
 
-                // 3. Hacemos visible el botón y lo agregamos a nuestra bandeja con FlowLayout
+                //Hacemos visible el botón y lo agregamos a nuestra bandeja con FlowLayout
                 botonMoneda.setPreferredSize(new Dimension(TAMANO_MONEDA, TAMANO_MONEDA)); // Le damos el tamaño estándar para el Layout
                 botonMoneda.setVisible(true);
 
                 bandejaVuelto.add(botonMoneda);
             }
 
-            // 4. Refrescamos la bandeja para que Swing dibuje todas las monedas que cayeron juntas
+            //Refrescamos la bandeja para que Swing dibuje todas las monedas que cayeron juntas
             bandejaVuelto.revalidate();
             bandejaVuelto.repaint();
         }
