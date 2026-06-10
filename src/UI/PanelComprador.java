@@ -1,7 +1,6 @@
 package UI;
 
 import Logica.Comprador;
-import Logica.Expendedor;
 import Logica.Moneda;
 import Logica.TipoMoneda;
 
@@ -15,7 +14,7 @@ import java.net.URL;
 /**
  * JPanel que representa gráficamente la lógica de {@link Comprador}
  * Se compone de un monedero con distintos valores de moneda, se pueden seleccionar
- * para que de esa manera se pueda compara un producto en {@link PanelExpendedor}
+ * para que de esa manera se pueda comprar un producto en {@link PanelExpendedor}
  */
 public class PanelComprador extends JPanel {
     public static final int TAMANO_MONEDA = 90;
@@ -27,6 +26,7 @@ public class PanelComprador extends JPanel {
     public static final int INICIO_BOTONES_AGREGAR_X = 247;
     public static final int INICIO_BOTONES_AGREGAR_Y = 30;
 
+    /** Array que sirve como esqueleto para la ubicación y tamaño de las monedas */
     private static final int[][] FILAS_MONEDA = {
             { INICIO_MONEDAS_X, INICIO_MONEDAS_Y, TAMANO_MONEDA, TAMANO_MONEDA, INICIO_BOTONES_AGREGAR_X, INICIO_BOTONES_AGREGAR_Y, TAMANO_BOTON_AGREGAR, TAMANO_BOTON_AGREGAR },
             { INICIO_MONEDAS_X, INICIO_MONEDAS_Y + (TAMANO_MONEDA + MARGEN_MONEDAS), TAMANO_MONEDA, TAMANO_MONEDA, INICIO_BOTONES_AGREGAR_X, INICIO_BOTONES_AGREGAR_Y + (TAMANO_BOTON_AGREGAR + MARGEN_BOTON_AGREGAR), TAMANO_BOTON_AGREGAR, TAMANO_BOTON_AGREGAR },
@@ -34,6 +34,7 @@ public class PanelComprador extends JPanel {
             { INICIO_MONEDAS_X, INICIO_MONEDAS_Y + 3 * (TAMANO_MONEDA + MARGEN_MONEDAS), TAMANO_MONEDA, TAMANO_MONEDA, INICIO_BOTONES_AGREGAR_X, INICIO_BOTONES_AGREGAR_Y + 3 * (TAMANO_BOTON_AGREGAR + MARGEN_BOTON_AGREGAR), TAMANO_BOTON_AGREGAR, TAMANO_BOTON_AGREGAR },
     };
 
+    /** A partir del enum TipoMoneda se sacan sus denominaciones */
     private static final TipoMoneda[] DENOMINACIONES = {
             TipoMoneda.MONEDA100,
             TipoMoneda.MONEDA500,
@@ -48,6 +49,8 @@ public class PanelComprador extends JPanel {
     private final JLabel[] labelContadores = new JLabel[4];
 
     private BufferedImage fondo;
+
+    /** Se importa una variable Comprador de la lógica */
     private Comprador comprador = new Comprador();
 
     /**
