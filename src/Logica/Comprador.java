@@ -46,9 +46,13 @@ public class Comprador {
     public String queConsumiste() {
         /** Si pudo realizar una compra, se consume el producto */
         if (this.producto instanceof Bebida bebida) {
-            this.sonido = bebida.beber();
+            String aux = bebida.beber();
+            this.producto = null;
+            return aux;
         } else if (this.producto instanceof Dulce dulce){
-            this.sonido = dulce.comer();
+            String aux = dulce.comer();
+            this.producto = null;
+            return aux;
         } else {
             this.sonido = null;
         }
