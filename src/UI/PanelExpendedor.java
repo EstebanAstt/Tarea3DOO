@@ -40,6 +40,11 @@ public class PanelExpendedor extends JPanel {
     public static final int BANDEJA_TAMANO_X = 272;
     public static final int BANDEJA_TAMANO_Y = 87;
 
+    public static final int BANDEJA_VUELTO_X = 326;
+    public static final int BANDEJA_VUELTO_Y = 226;
+    public static final int BANDEJA_VUELTO_TAMANO_X = 64;
+    public static final int BANDEJA_VUELTO_TAMANO_Y = 180;
+
     public static final int[][] SPRITES_PRODUCTOS = {
             {INICIO_SPRITES_PRODUCTOS_X                                 , INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
             {INICIO_SPRITES_PRODUCTOS_X + MARGEN_SPRITES_PRODUCTOS_X    , INICIO_SPRITES_PRODUCTOS_Y                             , TAMANO_LATA_X    , TAMANO_LATA_Y    },
@@ -80,9 +85,14 @@ public class PanelExpendedor extends JPanel {
 
         private BufferedImage imagenFondo;
         private final StringBuilder buffer = new StringBuilder();
+
         private final PanelComprador panelComprador;
         private final Expendedor expendedor;
+        private final Comprador comprador;
+
+
         private JButton botonBandeja = null;
+        private JPanel bandejaVuelto;
 
         private BufferedImage cocaColaSprite;
         private BufferedImage fantaSprite;
@@ -93,6 +103,15 @@ public class PanelExpendedor extends JPanel {
         public PanelMaquina(PanelComprador panelComprador, Expendedor expendedor) {
             this.panelComprador = panelComprador;
             this.expendedor = expendedor;
+            this.comprador = panelComprador.getComprador();
+
+
+
+            bandejaVuelto = new JPanel();
+            bandejaVuelto.setBounds(BANDEJA_VUELTO_X, BANDEJA_VUELTO_Y, BANDEJA_VUELTO_TAMANO_X, BANDEJA_VUELTO_TAMANO_Y);
+            bandejaVuelto.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5)); // Alinea al centro y da 5px de espacio
+            bandejaVuelto.setOpaque(false);
+            add(bandejaVuelto);
 
             try {
                 imagenFondo  = ImageIO.read(getClass().getClassLoader().getResource("Sprites/Expendedor.png"));
@@ -293,7 +312,7 @@ public class PanelExpendedor extends JPanel {
                             botonBandeja.addActionListener(ev -> {
                                 JOptionPane.showMessageDialog(this, "Has retirado tu producto exitosamente.");
 
-
+                                panelComprador.recibirProductoEnSlot(productoComprado, spriteProducto);
                                 remove(botonBandeja); // Se remueve a sí mismo del contenedor principal
                                 botonBandeja = null;  // Limpiamos la referencia
                                 revalidate();         // Avisa a Swing del cambio estructural
@@ -316,7 +335,7 @@ public class PanelExpendedor extends JPanel {
                     } catch (NoHayProductoException e) {
                         JOptionPane.showMessageDialog(this, "No hay más productos de este tipo");
                     }
-
+                    actualizarBandejaVuelto();
                     // Limpiamos el buffer tras intentar la operación
                     buffer.setLength(0);
                     break;
@@ -360,6 +379,49 @@ public class PanelExpendedor extends JPanel {
                 System.err.println("Error cargando sprite: " + ruta);
                 return null;
             }
+        }
+
+        public void actualizarBandejaVuelto() {
+            Moneda m;
+
+            // Hacemos el while extrayendo monedas de una en una hasta que getVuelto() retorne null
+            while ((m = expendedor.getVuelto()) != null) {
+                final Moneda monedaExtraida = m; // Variable final requerida para la expresión lambda
+
+                // 1. Identificamos el tipo de moneda para elegir su Sprite correspondiente
+                String rutaSprite = "Sprites/Moneda100.png"; // Ruta por defecto
+
+                if (monedaExtraida instanceof Logica.Moneda500) {
+                    rutaSprite = "Sprites/Moneda500.png";
+                } else if (monedaExtraida instanceof Logica.Moneda1000) {
+                    rutaSprite = "Sprites/Moneda1000.png";
+                } else if (monedaExtraida instanceof Logica.Moneda1500) {
+                    rutaSprite = "Sprites/Moneda1500.png";
+                }
+
+                // 2. Creamos tu CoinButton pasando la ruta, el tamaño (ej: 30x30) y la acción al recoger
+                CoinButton botonMoneda = new CoinButton(rutaSprite, TAMANO_MONEDA, () -> {
+                    try {
+
+                        this.comprador.agregarMoneda(monedaExtraida.getTipoMoneda());
+
+                        panelComprador.actualizarContadores();
+
+                    } catch (Logica.PagoIncorrectoException e) {
+                        System.err.println("Error al recoger la moneda: " + e.getMessage());
+                    }
+                });
+
+                // 3. Hacemos visible el botón y lo agregamos a nuestra bandeja con FlowLayout
+                botonMoneda.setPreferredSize(new Dimension(TAMANO_MONEDA, TAMANO_MONEDA)); // Le damos el tamaño estándar para el Layout
+                botonMoneda.setVisible(true);
+
+                bandejaVuelto.add(botonMoneda);
+            }
+
+            // 4. Refrescamos la bandeja para que Swing dibuje todas las monedas que cayeron juntas
+            bandejaVuelto.revalidate();
+            bandejaVuelto.repaint();
         }
     }
 
@@ -408,8 +470,7 @@ public class PanelExpendedor extends JPanel {
 
         }
     }
-/*
-    class CoinButton extends JButton {
+    static class CoinButton extends JButton {
 
         private Image sprite;
         private float opacidad = 1.0f;
@@ -421,7 +482,7 @@ public class PanelExpendedor extends JPanel {
 
 
             try {
-                BufferedImage img = ImageIO.read(new File(rutaSprite));
+                BufferedImage img = ImageIO.read(getClass().getClassLoader().getResource(rutaSprite));
                 sprite = img.getScaledInstance(size, size, Image.SCALE_SMOOTH);
             } catch (Exception e) {
                 System.err.println("No se encontró el sprite: " + rutaSprite);
@@ -475,5 +536,9 @@ public class PanelExpendedor extends JPanel {
             g2.drawImage(sprite, 0, 0, getWidth(), getHeight(), this);
             g2.dispose();
         }
-    }*/
+
+
+    }
+
+
 }
