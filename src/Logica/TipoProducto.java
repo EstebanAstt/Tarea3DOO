@@ -2,11 +2,11 @@ package Logica;
 
 public enum TipoProducto {
     COCA(1000, 1),
-    COCA1(1000,2 ),
+    FANTA(1000, 2),
     SPRITE(1000, 3),
-    SPRITE1(1000,4),
-    FANTA(1000, 5),
-    FANTA1(1000,6),
+    COCA1(1000,4),
+    FANTA1(1000,5),
+    SPRITE1(1000,6),
     SUPER8(500, 7),
     SNICKERS(1100, 8);
 
