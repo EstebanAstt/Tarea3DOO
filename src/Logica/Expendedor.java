@@ -224,6 +224,11 @@ public class Expendedor {
         return suma;
     }
 
+    /**
+     * Entrega el valor de elementos en un slot
+     * @param tipoProducto variable TipoProducto ingresado
+     * @return retorna la cantidad de elementos en un slot en específico
+     */
     public int getCantidadEnSlot(TipoProducto tipoProducto){
         if (tipoProducto == null) {
             return 0;

@@ -1,5 +1,8 @@
 package Logica;
 
+/**
+ * Enum que determina el valor de un producto y su número de slot
+ */
 public enum TipoProducto {
     COCA(1000, 1),
     FANTA(1000, 2),
@@ -26,13 +29,17 @@ public enum TipoProducto {
         return tipo;
     }
 
+    /**
+     * Busca el tipo de producto a partir de su número
+     * @param id variable int de identificación
+     * @return retorna TipoProducto al tener su número
+     */
     public static TipoProducto buscarPorTipo(int id) {
         for (TipoProducto p : TipoProducto.values()) {
             if (p.getTipo() == id) {
                 return p;
             }
         }
-
         return null;
     }
 }
