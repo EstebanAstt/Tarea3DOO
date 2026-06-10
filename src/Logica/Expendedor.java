@@ -215,7 +215,7 @@ public class Expendedor {
      * Calcula suma el valor de las monedas de monTemporal y retorna ese mismo valor
      * @return suma total de las monedas
      */
-    private int getCantidadIngresada(){
+    public int getCantidadIngresada(){
         int suma = 0;
         for(int i = 0 ; i < monTemporal.getSize() ; i++){
             Moneda m = monTemporal.peek(i);
