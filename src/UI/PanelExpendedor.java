@@ -231,7 +231,7 @@ public class PanelExpendedor extends JPanel {
          */
 
         private Producto productoComprado = null;
-
+        private Moneda aux = null;
         /**
          * Método que se encarga de dar una función a cada botón del expendedor
          * @param tecla Tecla presionada por el usuario
@@ -241,7 +241,6 @@ public class PanelExpendedor extends JPanel {
          */
         void onTeclaPresionada(String tecla) throws PagoIncorrectoException, PagoInsuficienteException, NoHayProductoException {
             /** Moneda que cambia de valor cuando se ingresa al expendedor*/
-            Moneda aux = null;
 
             // arreglar problema de "Moneda invalida al presionar Aceptar después de IngresarMoneda"
             switch (tecla) {
@@ -256,7 +255,13 @@ public class PanelExpendedor extends JPanel {
 
 
                     try {
-
+                        if (botonBandeja != null) {
+                            JOptionPane.showMessageDialog(this,
+                                    "¡Por favor, retire el producto anterior de la bandeja antes de realizar otra compra!",
+                                    "Bandeja Ocupada",
+                                    JOptionPane.WARNING_MESSAGE);
+                            break;
+                        }
                         int productoSeleccionadoNum = Integer.parseInt(buffer.toString());
                         TipoProducto tipoProducto = TipoProducto.buscarPorTipo(productoSeleccionadoNum);
 
@@ -265,9 +270,6 @@ public class PanelExpendedor extends JPanel {
 
                         if (productoComprado != null) {
 
-                            if (botonBandeja != null) {
-                                remove(botonBandeja);
-                            }
 
                             //Obtener la imagen correspondiente del producto comprado
                             BufferedImage spriteProducto = obtenerSprite(productoSeleccionadoNum);
