@@ -1,8 +1,8 @@
 package UI;
 
-import Logica.Expendedor;
-
 import java.awt.*;
+import java.io.File;
+import javax.sound.sampled.*;
 import javax.swing.*;
 
 /**
@@ -23,6 +23,26 @@ public class Ventana extends JFrame {
         add(panelExpendedor);
         pack();
         setLocationRelativeTo(null);
+
+        /** Se agrega música de fondo */
+        reproducirFondo("MusicaFondo.wav");
+    }
+
+    private static void reproducirFondo(String ruta){
+        try {
+            File archivo = new File(ruta);
+
+            /** Si el archivo existe, se reproduce como variable Clip y se repite indefinidamente */
+            if (archivo.exists()){
+                AudioInputStream audioFondo = AudioSystem.getAudioInputStream(archivo);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioFondo);
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+                clip.start();
+            }
+            else {
+                System.out.println("No se encontró el archivo de audio");
+            }
+        } catch (Exception e) {}
     }
 }
-

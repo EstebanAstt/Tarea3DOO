@@ -1,10 +1,6 @@
 package Main;
-import UI.PanelComprador;
-import UI.PanelExpendedor;
-import UI.PanelPrincipal;
-import UI.Ventana;
-import UI.Ventana;
 
+import UI.Ventana;
 import javax.swing.SwingUtilities;
 
 /**
