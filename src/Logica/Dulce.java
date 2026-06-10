@@ -17,5 +17,7 @@ public abstract class Dulce extends Producto {
         this.serie = serie;
     }
 
-    public abstract String comer();
+    public String comer(){
+        return "Comiste: ";
+    }
 }

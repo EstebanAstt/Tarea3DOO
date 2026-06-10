@@ -10,6 +10,6 @@ public class Snickers extends Dulce {
 
     @Override
     public String comer(){
-        return "snickers";
+        return super.comer() + "snickers";
     }
 }

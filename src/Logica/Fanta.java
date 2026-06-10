@@ -10,6 +10,6 @@ public class Fanta extends Bebida {
 
     @Override
     public String beber() {
-        return "fanta";
+        return super.beber() + "fanta";
     }
 }

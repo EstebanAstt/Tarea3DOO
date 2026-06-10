@@ -21,5 +21,7 @@ public abstract class Bebida extends Producto {
         return this.serie;
     }
 
-    public abstract String beber();
+    public String beber(){
+        return "Bebiste: ";
+    }
 }
