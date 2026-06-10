@@ -1,6 +1,7 @@
 package UI;
 
 import Logica.Comprador;
+import Logica.Expendedor;
 import Logica.Moneda;
 import Logica.TipoMoneda;
 
@@ -11,6 +12,11 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.net.URL;
 
+/**
+ * JPanel que representa gráficamente la lógica de {@link Comprador}
+ * Se compone de un monedero con distintos valores de moneda, se pueden seleccionar
+ * para que de esa manera se pueda compara un producto en {@link PanelExpendedor}
+ */
 public class PanelComprador extends JPanel {
     public static final int TAMANO_MONEDA = 90;
     public static final int INICIO_MONEDAS_X = 45;
@@ -44,9 +50,10 @@ public class PanelComprador extends JPanel {
     private BufferedImage fondo;
     private Comprador comprador = new Comprador();
 
-
+    /**
+     * Constructor que carga el fondo y las monedas
+     */
     public PanelComprador() {
-
         try {
             URL fondoUrl = getClass().getClassLoader().getResource("Sprites/Comprador.png");
             if (fondoUrl != null) {
@@ -77,6 +84,9 @@ public class PanelComprador extends JPanel {
         }
     }
 
+    /**
+     * Crea las filas de monedas seleccionando sus propios archivos de imágen
+     */
     private void crearFilas() {
         for (int i = 0; i < FILAS_MONEDA.length; i++) {
             TipoMoneda aux = TipoMoneda.buscarPorTipo(i);
@@ -99,12 +109,12 @@ public class PanelComprador extends JPanel {
                     f[6], f[7]
             );
             botonGenerar.setBounds(f[4], f[5], f[6], f[7]);
-            //-> aca hay que poner la logica de generar una moneda para el comprador. Se puso un contador de enteros pero la idea es que realmente se genere una moneda)
+
             botonGenerar.addActionListener(e -> {
                 try {
                     comprador.agregarMoneda(aux);
 
-                    // Si la moneda se agrega con éxito, se actualiza la interfaz gráfica
+                    /** Si la moneda se agrega con éxito, se actualiza la interfaz gráfica */
                     int nuevaCantidad = comprador.getCantidadMoneda(aux);
                     labelContadores[pos].setText(String.valueOf(nuevaCantidad));
 
@@ -128,6 +138,10 @@ public class PanelComprador extends JPanel {
         }
     }
 
+    /**
+     * Selecciona una moneda del monedero
+     * @param nueva variable MonedaSelecciona que funciona como JButton
+     */
     private void seleccionarMoneda(MonedaSeleccionada nueva) {
         if (monedaSeleccionada != null && monedaSeleccionada != nueva) {
             monedaSeleccionada.setSeleccionada(false);
@@ -139,6 +153,10 @@ public class PanelComprador extends JPanel {
         System.out.println("Moneda seleccionada: $" + getDenominacionSeleccionada());
     }
 
+    /**
+     * Toma un índice de TipoMoneda
+     * @return TipoMoneda que funciona para el método seleccionarMoneda
+     */
     public TipoMoneda getDenominacionSeleccionada() {
         if (indiceMonedaSeleccionada < 0) return null;
         return DENOMINACIONES[indiceMonedaSeleccionada];
@@ -148,11 +166,22 @@ public class PanelComprador extends JPanel {
         return contadores[fila];
     }
 
+    /**
+     * Permite seleccionar un botón de moneda, posteriormente se ocupa
+     * este método para ingresarlo al expendedor y comprar un producto
+     */
     static class MonedaSeleccionada extends JButton {
         private final ImageIcon spriteSeleccionado;
         private boolean seleccionada = false;
         private final int indice;
 
+        /**
+         * Se selecciona la imágen de una moneda
+         * @param rutaSel ruta de imágen para una moneda
+         * @param w ancho de imágen
+         * @param h altura de imágen
+         * @param indice variable int para determinar el tipo de moneda
+         */
         MonedaSeleccionada(String rutaSel, int w, int h, int indice) {
             this.indice = indice;
             spriteSeleccionado = cargarSprite(rutaSel, w, h);
@@ -174,6 +203,13 @@ public class PanelComprador extends JPanel {
             repaint();
         }
 
+        /**
+         * Se carga un sprite con un ruta ingresada y se retorna como ImageIcon
+         * @param ruta ruta ingresada
+         * @param w ancho de imágen
+         * @param h altura de imágen
+         * @return ImageIcon del archivo de imágen
+         */
         private ImageIcon cargarSprite(String ruta, int w, int h) {
             try {
                 URL url = getClass().getClassLoader().getResource(ruta);
@@ -199,6 +235,9 @@ public class PanelComprador extends JPanel {
         }
     }
 
+    /**
+     * Se crea un botón para una variable ImageIcon
+     */
     static class SpriteButton extends JButton {
         private final ImageIcon spritePresionado;
         private boolean presionado = false;
@@ -228,6 +267,13 @@ public class PanelComprador extends JPanel {
             });
         }
 
+        /**
+         * Se carga un sprite con un ruta ingresada y se retorna como ImageIcon
+         * @param ruta ruta ingresada
+         * @param w ancho de imágen
+         * @param h altura de imágen
+         * @return ImageIcon del archivo de imágen
+         */
         private ImageIcon cargarSprite(String ruta, int w, int h) {
             try {
                 URL url = getClass().getClassLoader().getResource(ruta);
@@ -253,6 +299,10 @@ public class PanelComprador extends JPanel {
         }
     }
 
+    /**
+     * Se obtiene una moneda de la lógica de Comprador
+     * @return variable Moneda que se retira del monedero
+     */
     public Moneda ingresarMoneda(){
         TipoMoneda tipoMoneda = getDenominacionSeleccionada();
         if(tipoMoneda != null){
@@ -261,20 +311,23 @@ public class PanelComprador extends JPanel {
         return null;
     }
 
+    /**
+     * Atualiza la cantidad de monedas del comprador al realizar una compra
+     */
     public void actualizarContadores() {
         for (int i = 0; i < FILAS_MONEDA.length; i++) {
-            // Buscamos el tipo de moneda correspondiente a esta fila
+            /** Buscamos el tipo de moneda correspondiente a esta fila */
             TipoMoneda aux = TipoMoneda.buscarPorTipo(i);
 
-            // Pedimos al comprador la cantidad real y actualizada de monedas
+            /** Pedimos al comprador la cantidad real y actualizada de monedas */
             int nuevaCantidad = comprador.getCantidadMoneda(aux);
 
-            // Actualizamos el JLabel de la pantalla si el array ya está inicializado
+            /** Actualizamos el JLabel de la pantalla si el array ya está inicializado */
             if (labelContadores[i] != null) {
                 labelContadores[i].setText(String.valueOf(nuevaCantidad));
             }
         }
-        // Forzamos a Swing a redibujar visualmente el panel por si acaso
+        /** Se redibuja el panel */
         this.repaint();
     }
 }
